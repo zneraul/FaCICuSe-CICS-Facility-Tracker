@@ -1,0 +1,728 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FaCICuSe — Connected Insights, Coordinated Spaces</title>
+    <meta
+      name="description"
+      content="CICS Building facility discovery, live schedule availability, reservation coordination, and maintenance reporting at Batangas State University – Alangilan."
+    />
+    <meta property="og:title" content="FaCICuSe — Connected Insights, Coordinated Spaces" />
+    <meta
+      property="og:description"
+      content="CICS Building facility discovery, live schedule availability, reservation coordination, and maintenance reporting at Batangas State University – Alangilan."
+    />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="icon" type="image/jpeg" href="/assets/images/facicuse-logo.jpg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/assets/css/tokens.css" />
+    <link rel="stylesheet" href="/assets/css/layout.css" />
+    <link rel="stylesheet" href="/assets/css/components.css" />
+    <link rel="stylesheet" href="/assets/css/landing-html.css" />
+    <link rel="stylesheet" href="/assets/css/auth-modal.css" />
+  </head>
+  <body>
+    <div class="ambient-canvas">
+      <div class="ambient-backdrop" aria-hidden="true"></div>
+      <div class="ambient-scrim" aria-hidden="true"></div>
+
+      <!-- Sticky Institutional Site Header -->
+      <header class="public-header">
+        <div class="public-header-inner">
+          <a href="#home" class="brand-lockup" data-section-link="home">
+            <span class="brand-logo-badge">
+              <img
+                src="/assets/images/facicuse-logo.jpg"
+                alt="FaCICuSe logo"
+                class="brand-logo-img"
+                width="28"
+                height="28"
+              />
+            </span>
+            <span class="brand-wordmark">FaCICuSe</span>
+          </a>
+
+          <nav class="public-nav-links" aria-label="Primary navigation">
+            <a href="#home" class="public-nav-link active" aria-current="location" data-section-link="home">Home</a>
+            <a href="#facilities" class="public-nav-link" data-section-link="facilities">Facilities</a>
+            <a href="#reservations" class="public-nav-link" data-section-link="reservations">Availability</a>
+            <a href="#about" class="public-nav-link" data-section-link="about">How It Works</a>
+          </nav>
+
+          <div class="header-actions-group">
+            <a href="/signin" id="header-auth-cta" class="btn btn-coral btn-sm" data-open-auth-modal>Sign In</a>
+            <button
+              type="button"
+              id="public-mobile-toggle"
+              class="icon-btn public-mobile-toggle"
+              aria-label="Open navigation menu"
+              aria-expanded="false"
+              aria-controls="public-mobile-menu"
+            >
+              <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <line x1="4" x2="20" y1="6" y2="6"></line>
+                <line x1="4" x2="20" y1="12" y2="12"></line>
+                <line x1="4" x2="20" y1="18" y2="18"></line>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <nav id="public-mobile-menu" class="public-mobile-drawer" aria-label="Mobile section navigation" hidden>
+          <a href="#home" class="public-mobile-link active" aria-current="location" data-section-link="home">Home</a>
+          <a href="#facilities" class="public-mobile-link" data-section-link="facilities">Facilities</a>
+          <a href="#reservations" class="public-mobile-link" data-section-link="reservations">Availability</a>
+          <a href="#about" class="public-mobile-link" data-section-link="about">How It Works</a>
+          <a href="/signin" id="mobile-auth-cta" class="public-mobile-link" data-open-auth-modal>Sign In</a>
+        </nav>
+      </header>
+
+      <main class="public-main">
+        <!-- 1. Hero Section -->
+        <section id="home" class="landing-hero" aria-labelledby="hero-heading">
+          <div class="glass-panel landing-hero-copy">
+            <div class="meta-line">
+              <span class="brand-logo-badge hero-kicker-badge">
+                <img
+                  src="/assets/images/facicuse-logo.jpg"
+                  alt=""
+                  aria-hidden="true"
+                  class="hero-kicker-logo"
+                />
+              </span>
+              <span data-project-field="institutionShort">Batangas State University – Alangilan</span>
+              <span aria-hidden="true">·</span>
+              <span data-project-field="collegeShort">CICS</span>
+            </div>
+
+            <h1 id="hero-heading" class="landing-headline">
+              Coordinate every
+              <span class="landing-headline-gradient">classroom, computer lab, and CICS space</span>
+              in one place.
+            </h1>
+
+            <p class="landing-subhead" data-project-field="purpose">
+              Real-time monitoring and reservation scheduling for the 5-floor College of Informatics and
+              Computing Sciences (CICS) Building—keeping room allocations transparent and conflict-free.
+            </p>
+
+            <div class="hero-cta-row">
+              <a href="/facilities" class="btn btn-coral">
+                <span>Browse All 38 Spaces</span>
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M5 12h14"></path>
+                  <path d="m12 5 7 7-7 7"></path>
+                </svg>
+              </a>
+              <a href="/timetable" class="btn btn-timetable" aria-label="View the class timetable">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <rect x="3" y="5" width="18" height="16" rx="2"></rect>
+                  <path d="M16 3v4M8 3v4M3 10h18"></path>
+                  <path d="m9 15 2 2 4-4"></path>
+                </svg>
+                <span>View Class Timetable</span>
+                <svg class="btn-timetable-arrow" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path>
+                </svg>
+              </a>
+              <a href="/signin" id="hero-auth-cta" class="btn btn-glass" data-open-auth-modal>Sign In to Workspace</a>
+            </div>
+
+            <dl class="hero-stats-dl">
+              <div>
+                <dd id="hero-stat-total" class="tabular hero-stat-val hero-stat-val--blue">38</dd>
+                <dt class="hero-stat-label">CICS spaces</dt>
+              </div>
+              <div>
+                <dd id="hero-stat-active" class="tabular hero-stat-val hero-stat-val--purple">26</dd>
+                <dt class="hero-stat-label">Reservable rooms</dt>
+              </div>
+              <div>
+                <dd id="hero-stat-capacity" class="tabular hero-stat-val hero-stat-val--light">5</dd>
+                <dt class="hero-stat-label">Building floors</dt>
+              </div>
+            </dl>
+          </div>
+
+          <figure class="landing-hero-media">
+            <img
+              src="/assets/images/facilities/Building/Wider.jpeg"
+              alt="Batangas State University Alangilan CICS building exterior"
+              fetchpriority="high"
+              decoding="async"
+              onerror="this.onerror=null;this.src='/assets/images/facilities/Building/Closer.jpeg'"
+              referrerpolicy="no-referrer"
+            />
+            <figcaption class="landing-hero-caption">
+              <div class="hero-caption-title">
+                <span data-project-field="college">College of Informatics and Computing Sciences (CICS)</span>
+              </div>
+              <div class="hero-caption-sub">
+                <span data-project-field="buildingScope.label">5-Floor College Building</span> ·
+                <span data-project-field="buildingScope.summary">1 Building · 5 Floors · 38 Facilities</span>
+              </div>
+            </figcaption>
+          </figure>
+        </section>
+
+        <!-- 2. CICS Facilities Directory Preview -->
+        <section id="facilities" class="landing-section" aria-labelledby="discovery-heading">
+          <div class="section-header-row">
+            <div>
+              <span class="section-kicker">CICS Building Directory</span>
+              <h2 id="discovery-heading" class="section-title">
+                Explore CICS Classrooms, Labs &amp; Offices
+              </h2>
+              <p class="section-subcopy">
+                Filter rooms across Floors 1–5 by category, floor, or reservability before signing in.
+              </p>
+            </div>
+
+            <form id="landing-search-form" class="search-controls-row" role="search">
+              <label for="landing-facility-search" class="sr-only">Search CICS facilities</label>
+              <div class="search-input-wrap">
+                <svg class="search-input-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <circle cx="11" cy="11" r="8"></circle>
+                  <path d="m21 21-4.3-4.3"></path>
+                </svg>
+                <input
+                  id="landing-facility-search"
+                  name="search"
+                  type="search"
+                  class="field-input search-input-padded"
+                  placeholder="Search room or code..."
+                  autocomplete="off"
+                />
+              </div>
+              <label for="landing-floor-select" class="sr-only">Filter by CICS floor</label>
+              <select id="landing-floor-select" class="field-select" style="width: auto; min-width: 145px;">
+                <option value="All Floors">All 5 Floors</option>
+                <option value="First Floor">First Floor</option>
+                <option value="Second Floor">Second Floor</option>
+                <option value="Third Floor">Third Floor</option>
+                <option value="Fourth Floor">Fourth Floor</option>
+                <option value="Fifth Floor">Fifth Floor</option>
+              </select>
+              <a href="/facilities" class="btn btn-glass btn-sm">Full Directory</a>
+            </form>
+          </div>
+
+          <div class="tabs-scroll-wrap">
+            <div class="v10-tabs" role="tablist" aria-label="Facility categories" id="landing-category-tabs">
+              <button type="button" role="tab" aria-selected="true" class="v10-tab-btn active" data-category="All">All (38)</button>
+              <button type="button" role="tab" aria-selected="false" class="v10-tab-btn" data-category="Learning">Learning (26)</button>
+              <button type="button" role="tab" aria-selected="false" class="v10-tab-btn" data-category="Administrative">Administrative (7)</button>
+              <button type="button" role="tab" aria-selected="false" class="v10-tab-btn" data-category="Support">Support (5)</button>
+            </div>
+
+            <button
+              type="button"
+              id="landing-reservable-toggle"
+              class="btn btn-glass btn-sm"
+              aria-pressed="false"
+            >
+              Reservable Only
+            </button>
+          </div>
+
+          <div id="landing-facilities-container" aria-live="polite">
+            <div class="glass-panel state-panel-center">
+              Loading CICS Building facilities...
+            </div>
+          </div>
+        </section>
+
+        <!-- 3. Live Availability Checker & Reservation Flow -->
+        <section id="reservations" class="landing-section" aria-labelledby="reservations-demo-heading">
+          <div class="reservation-demo-split">
+            <div class="glass-panel preview-card-panel">
+              <div>
+                <span class="section-kicker">Live Schedule Check</span>
+                <h2 id="reservations-demo-heading" class="section-title">
+                  Check Room Availability Before Requesting
+                </h2>
+                <p class="about-body-copy">
+                  Select a reservable CICS room and date to inspect active Pending or Confirmed booking blocks.
+                </p>
+              </div>
+
+              <form id="availability-preview-form" class="preview-form" novalidate>
+                <div class="form-grid-2">
+                  <div class="field-group">
+                    <label for="preview-facility-select" class="field-label">CICS Facility</label>
+                    <select id="preview-facility-select" name="facilityId" class="field-select" required>
+                      <option value="">Loading facilities...</option>
+                    </select>
+                  </div>
+
+                  <div class="field-group">
+                    <label for="preview-date-input" class="field-label">Target Date</label>
+                    <input
+                      id="preview-date-input"
+                      name="date"
+                      type="date"
+                      class="field-input"
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div id="preview-validation-msg" class="preview-validation-msg" role="alert" hidden></div>
+
+                <div class="preview-form-actions">
+                  <button type="submit" class="btn btn-glass btn-sm">Check Schedule</button>
+                </div>
+              </form>
+
+              <div id="preview-schedule-box" class="glass-panel-subtle preview-result-box" aria-live="polite">
+                <p class="card-body-copy">Select a CICS facility to inspect its schedule.</p>
+              </div>
+
+              <div class="hero-cta-row">
+                <a id="preview-facility-link" href="/facilities" class="btn btn-coral btn-sm" hidden>
+                  <span>Open Room &amp; Book</span>
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M5 12h14"></path>
+                    <path d="m12 5 7 7-7 7"></path>
+                  </svg>
+                </a>
+                <a href="/signin" id="preview-auth-cta" class="btn btn-glass btn-sm" data-open-auth-modal data-return-to="/app/calendar">
+                  Sign In to Submit Request
+                </a>
+              </div>
+            </div>
+
+            <div class="preview-collage-col">
+              <div class="glass-panel" style="display: flex; flex-direction: column; gap: 0.9rem;">
+                <span class="section-kicker">Booking Lifecycle</span>
+                <h3 class="section-title" style="font-size: 1.35rem;">Three-Step Conflict-Free Coordination</h3>
+
+                <div style="display: flex; flex-direction: column; gap: 0.75rem; margin-top: 0.25rem;">
+                  <div style="display: flex; gap: 0.75rem; align-items: flex-start;">
+                    <span class="step-number">01</span>
+                    <div>
+                      <strong style="font-size: 0.92rem; color: var(--ink-primary);">Pick an Open Window</strong>
+                      <p class="card-body-copy" style="margin-top: 0.15rem;">
+                        Verify posted CICS hours and avoid existing Pending or Confirmed time blocks.
+                      </p>
+                    </div>
+                  </div>
+                  <div style="display: flex; gap: 0.75rem; align-items: flex-start;">
+                    <span class="step-number">02</span>
+                    <div>
+                      <strong style="font-size: 0.92rem; color: var(--ink-primary);">Submit Request with Optional Block Tag</strong>
+                      <p class="card-body-copy" style="margin-top: 0.15rem;">
+                        Include purpose, headcount, and optional BSIT section code (e.g., IT-3106).
+                      </p>
+                    </div>
+                  </div>
+                  <div style="display: flex; gap: 0.75rem; align-items: flex-start;">
+                    <span class="step-number">03</span>
+                    <div>
+                      <strong style="font-size: 0.92rem; color: var(--ink-primary);">Track Decision &amp; Room Readiness</strong>
+                      <p class="card-body-copy" style="margin-top: 0.15rem;">
+                        Receive approval alerts and report room or equipment defects if repairs are needed.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <aside class="alert-banner alert-info" aria-label="Scheduling accuracy policy">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <path d="m9 12 2 2 4-4"></path>
+                </svg>
+                <span>
+                  Scheduled booking hours reflect confirmed reservations only and never infer unverified physical occupancy.
+                </span>
+              </aside>
+            </div>
+          </div>
+        </section>
+
+        <!-- 4. How It Works & Campus Roles -->
+        <section id="about" class="landing-section" aria-labelledby="roles-heading">
+          <div class="section-header-row">
+            <div>
+              <span class="section-kicker">How It Works &amp; Access Roles</span>
+              <h2 id="roles-heading" class="section-title">
+                Focused Workspaces for Students, Faculty &amp; Administrators
+              </h2>
+              <p class="section-subcopy">
+                Each role accesses only the booking, maintenance, or governance tools it needs.
+              </p>
+            </div>
+            <div class="hero-cta-row">
+
+            </div>
+          </div>
+
+          <div class="roles-grid">
+            <article class="glass-panel role-card-article">
+              <div class="role-card-header">
+                <div class="role-icon-box" aria-hidden="true">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z"></path>
+                    <path d="M22 10v6"></path>
+                    <path d="M6 12.5V16a6 3 0 0 0 12 0v-3.5"></path>
+                  </svg>
+                </div>
+                <div>
+                  <h3 class="role-card-title">Students</h3>
+                  <div class="role-card-sub">Academic study &amp; project rooms</div>
+                </div>
+              </div>
+              <ul class="bullets-clean">
+                <li>Browse CICS rooms across Floors 1–5 and check open hours before signing in.</li>
+                <li>Request Learning classrooms (101–506) with optional BSIT block tags (e.g., IT-3106).</li>
+                <li>Report classroom or restroom maintenance issues directly to facilities staff.</li>
+              </ul>
+            </article>
+
+            <article class="glass-panel role-card-article">
+              <div class="role-card-header">
+                <div class="role-icon-box" aria-hidden="true">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="9" cy="7" r="4"></circle>
+                    <polyline points="16 11 18 13 22 9"></polyline>
+                  </svg>
+                </div>
+                <div>
+                  <h3 class="role-card-title">Professors</h3>
+                  <div class="role-card-sub">Computer labs &amp; instructional rooms</div>
+                </div>
+              </div>
+              <ul class="bullets-clean">
+                <li>Reserve Computer Labs 1–6, SMART Classroom, and Physics/Tech/IT laboratories.</li>
+                <li>Verify open slots ahead of class sessions and cancel unused bookings cleanly.</li>
+                <li>Escalate projector, workstation, or HVAC issues with severity tracking.</li>
+              </ul>
+            </article>
+
+            <article class="glass-panel role-card-article">
+              <div class="role-card-header">
+                <div class="role-icon-box" aria-hidden="true">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"></path>
+                    <path d="m9 12 2 2 4-4"></path>
+                  </svg>
+                </div>
+                <div>
+                  <h3 class="role-card-title">Administrators</h3>
+                  <div class="role-card-sub">Approvals, repairs &amp; analytics</div>
+                </div>
+              </div>
+              <ul class="bullets-clean">
+                <li>Approve or reject pending bookings with audit-logged administrative notes.</li>
+                <li>Triage maintenance tickets, switch room statuses, and manage user roles.</li>
+                <li>Review admin-only CICS utilization charts derived strictly from recorded bookings.</li>
+              </ul>
+            </article>
+          </div>
+        </section>
+
+        <!-- 5. Concise FAQ & Call to Action -->
+        <section id="faq" class="landing-section" aria-labelledby="faq-heading">
+          <div class="section-header-row">
+            <div>
+              <span class="section-kicker">Questions &amp; Policy</span>
+              <h2 id="faq-heading" class="section-title">Frequently Asked Questions</h2>
+            </div>
+          </div>
+
+          <div class="faq-list" id="landing-faq-list">
+            <article class="faq-item">
+              <button type="button" class="faq-trigger" aria-expanded="true" aria-controls="faq-panel-0">
+                <span>Can students and faculty check room availability before signing in?</span>
+                <svg class="faq-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="m6 9 6 6 6-6"></path>
+                </svg>
+              </button>
+              <div id="faq-panel-0" class="faq-answer">
+                Yes. The public directory and live availability checker display floor locations, CICS
+                room categories, operational statuses, and anonymized Pending or Confirmed blocks for any date.
+              </div>
+            </article>
+
+            <article class="faq-item">
+              <button type="button" class="faq-trigger" aria-expanded="false" aria-controls="faq-panel-1">
+                <span>How are double bookings and overlapping reservations prevented?</span>
+                <svg class="faq-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="m6 9 6 6 6-6"></path>
+                </svg>
+              </button>
+              <div id="faq-panel-1" class="faq-answer" hidden>
+                Every reservation request is validated inside an atomic server-side transaction against
+                active Pending and Confirmed bookings for that facility and date, rejecting conflicts immediately.
+              </div>
+            </article>
+
+            <article class="faq-item">
+              <button type="button" class="faq-trigger" aria-expanded="false" aria-controls="faq-panel-2">
+                <span>How are maintenance issues reported and resolved?</span>
+                <svg class="faq-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="m6 9 6 6 6-6"></path>
+                </svg>
+              </button>
+              <div id="faq-panel-2" class="faq-answer" hidden>
+                Signed-in users file structured tickets linked to a specific CICS room with severity
+                and optional photos. Administrators triage tickets from Open to Resolved with action notes.
+              </div>
+            </article>
+
+            <article class="faq-item">
+              <button type="button" class="faq-trigger" aria-expanded="false" aria-controls="faq-panel-3">
+                <span>Who can view utilization analytics and administrative controls?</span>
+                <svg class="faq-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="m6 9 6 6 6-6"></path>
+                </svg>
+              </button>
+              <div id="faq-panel-3" class="faq-answer" hidden>
+                Utilization analytics, facility status switches, and user role governance are strictly
+                enforced for System Administrators only on both the server API and workspace navigation.
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <!-- Final Call to Action -->
+        <section class="landing-section" aria-label="Get started">
+          <div class="cta-glass-banner">
+            <div class="cta-copy-wrap">
+              <h2 class="cta-heading">
+                Ready to check or reserve a CICS Building space?
+              </h2>
+              <p class="cta-subcopy">
+                Inspect room schedules immediately as a visitor, or sign in to submit reservations and maintenance reports.
+              </p>
+            </div>
+
+            <div class="hero-cta-row">
+              <a href="/facilities" class="btn btn-on-coral">
+                <span>Explore All 38 Spaces</span>
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M5 12h14"></path>
+                  <path d="m12 5 7 7-7 7"></path>
+                </svg>
+              </a>
+              <a href="/signin" id="cta-auth-link" class="btn btn-cta-secondary" data-open-auth-modal>Sign In</a>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <!-- Semantic Footer -->
+      <footer id="contact" class="public-footer">
+        <div class="public-footer-inner">
+          <div>
+            <a href="#home" class="brand-lockup" data-section-link="home">
+              <span class="brand-logo-badge">
+                <img
+                  src="/assets/images/facicuse-logo.jpg"
+                  alt="FaCICuSe logo"
+                  class="brand-logo-img"
+                  width="28"
+                  height="28"
+                />
+              </span>
+              <span class="brand-wordmark">FaCICuSe</span>
+            </a>
+            <p class="card-body-copy" style="margin-top: 0.6rem; max-width: 34ch;">
+              <strong data-project-field="meaning">Facility in Use</strong> —
+              <span data-project-field="tagline">Connected Insights, Coordinated Spaces</span>.
+            </p>
+            <address class="footer-address">
+              <span data-project-field="college">College of Informatics and Computing Sciences (CICS)</span>
+              <span data-project-field="institutionShort">Batangas State University – Alangilan</span>
+              <span data-project-field="campusAddress">Golden Country Homes, Alangilan, Batangas City, Batangas 4200</span>
+              <span>
+                Email:
+                <a href="mailto:facicuse@gmail.com" class="footer-address-link" data-project-field="contactEmail">facicuse@gmail.com</a>
+              </span>
+            </address>
+          </div>
+
+          <div>
+            <strong class="footer-col-title">Quick Links</strong>
+            <div class="footer-links-list">
+              <a href="#home" data-section-link="home">Home</a>
+              <a href="/facilities">CICS Directory (38 Rooms)</a>
+              <a href="/timetable">Class Timetable</a>
+              <a href="#reservations" data-section-link="reservations">Live Availability</a>
+              <a href="#about" data-section-link="about">How It Works</a>
+              <a href="#faq" data-section-link="faq">FAQ</a>
+            </div>
+          </div>
+
+          <div>
+            <strong class="footer-col-title">Campus Workspace</strong>
+            <div class="footer-links-list">
+              <a href="/signin" data-open-auth-modal>University Sign In</a>
+              <a href="/app/dashboard">Authenticated Workspace</a>
+              <span class="footer-copyright" data-project-field="copyright">
+                © 2026 FaCICuSe · Batangas State University – Alangilan (CICS)
+              </span>
+            </div>
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <!-- Glassmorphism Sign-In Modal Overlay -->
+    <div id="auth-modal-backdrop" class="auth-modal-backdrop" hidden>
+      <div
+        id="auth-modal-dialog"
+        class="auth-modal-dialog"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="auth-modal-title"
+        aria-describedby="auth-modal-subtitle"
+        tabindex="-1"
+      >
+        <div class="auth-modal-topbar">
+          <div class="auth-modal-brand">
+            <span class="auth-modal-logo-badge">
+              <img
+                src="/assets/images/facicuse-logo.jpg"
+                alt="FaCICuSe logo"
+                class="auth-modal-logo-img"
+                width="28"
+                height="28"
+              />
+            </span>
+            <span class="auth-modal-wordmark">FaCICuSe</span>
+          </div>
+
+          <button
+            type="button"
+            id="auth-modal-close"
+            class="auth-modal-close"
+            aria-label="Close sign-in dialog"
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M18 6 6 18"></path>
+              <path d="m6 6 12 12"></path>
+            </svg>
+          </button>
+        </div>
+
+        <div class="auth-modal-header">
+          <span class="auth-modal-kicker">Batangas State University – Alangilan · CICS</span>
+          <h2 id="auth-modal-title" class="auth-modal-title">Sign in to FaCICuSe</h2>
+          <p id="auth-modal-subtitle" class="auth-modal-subtitle">
+            Access your role workspace to reserve CICS rooms, check live schedules, and track maintenance tickets.
+          </p>
+        </div>
+
+        <div id="auth-modal-alert" class="auth-modal-alert" role="alert" hidden>
+          <svg id="auth-modal-alert-icon" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"></svg>
+          <span id="auth-modal-alert-text"></span>
+        </div>
+
+        <form id="auth-modal-form" class="auth-modal-form" novalidate>
+          <div class="auth-modal-field">
+            <label for="auth-modal-email" class="auth-modal-label">University Email</label>
+            <input
+              id="auth-modal-email"
+              name="email"
+              type="email"
+              required
+              autocomplete="email"
+              class="auth-modal-input"
+              placeholder="name@g.batstate-u.edu.ph"
+            />
+          </div>
+
+          <div class="auth-modal-field">
+            <label for="auth-modal-password" class="auth-modal-label">FaCICuSe Password</label>
+            <div class="auth-modal-input-wrap">
+              <input
+                id="auth-modal-password"
+                name="password"
+                type="password"
+                required
+                autocomplete="current-password"
+                class="auth-modal-input auth-modal-input--password"
+                placeholder="Enter your FaCICuSe password"
+              />
+              <button
+                type="button"
+                id="auth-modal-toggle-password"
+                class="auth-modal-eye-btn"
+                aria-label="Show password"
+                aria-pressed="false"
+              >
+                <svg data-eye-open width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"></path>
+                  <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+                <svg data-eye-closed width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" hidden>
+                  <path d="M10.733 5.076a10.744 10.744 0 0 1 11.205 6.575 1 1 0 0 1 0 .696 10.747 10.747 0 0 1-1.444 2.49"></path>
+                  <path d="M14.084 14.158a3 3 0 0 1-4.242-4.242"></path>
+                  <path d="M17.479 17.499a10.75 10.75 0 0 1-15.417-5.151 1 1 0 0 1 0-.696 10.75 10.75 0 0 1 4.446-5.143"></path>
+                  <path d="m2 2 20 20"></path>
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <p class="auth-modal-footnote">This password is separate from your university Google password. If you have not set a FaCICuSe password, use the University Google sign-in option.</p>
+
+          <button type="submit" id="auth-modal-submit" class="auth-modal-submit">
+            <span>Sign In with University Email</span>
+          </button>
+        </form>
+
+        <button type="button" id="auth-modal-password-setup-trigger" class="auth-modal-setup-trigger">Need a separate FaCICuSe password? Set one up</button>
+
+        <div id="auth-modal-password-setup-panel" class="auth-modal-password-setup" hidden>
+          <p class="auth-modal-footnote">Verify your university Google account first. Then create a separate FaCICuSe password that you can use with your university email.</p>
+          <button type="button" id="auth-modal-password-setup-google" class="auth-modal-google-btn">
+            Verify with University Google Account
+          </button>
+          <form id="auth-modal-password-setup-form" class="auth-modal-form" hidden>
+            <div class="auth-modal-field">
+              <label for="auth-modal-new-password" class="auth-modal-label">New FaCICuSe Password</label>
+              <input id="auth-modal-new-password" type="password" class="auth-modal-input" autocomplete="new-password" minlength="12" maxlength="128" required placeholder="At least 12 characters" />
+            </div>
+            <div class="auth-modal-field">
+              <label for="auth-modal-confirm-password" class="auth-modal-label">Confirm FaCICuSe Password</label>
+              <input id="auth-modal-confirm-password" type="password" class="auth-modal-input" autocomplete="new-password" minlength="12" maxlength="128" required placeholder="Re-enter your new password" />
+            </div>
+            <button type="submit" id="auth-modal-password-setup-submit" class="auth-modal-submit">Save FaCICuSe Password</button>
+          </form>
+        </div>
+
+        <div class="auth-modal-divider" aria-hidden="true">or continue with</div>
+
+        <button type="button" id="auth-modal-google-btn" class="auth-modal-google-btn">
+          <span class="auth-modal-spinner" data-google-spinner aria-hidden="true" hidden></span>
+          <svg data-google-icon width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
+            <path fill="#4285F4" d="M23.745 12.27c0-.79-.07-1.54-.19-2.27h-11.3v4.51h6.47c-.29 1.48-1.14 2.73-2.4 3.58v3h3.86c2.26-2.09 3.56-5.17 3.56-8.82z"></path>
+            <path fill="#34A853" d="M12.255 24c3.24 0 5.95-1.08 7.93-2.91l-3.86-3c-1.08.72-2.45 1.16-4.07 1.16-3.13 0-5.78-2.11-6.73-4.96h-3.98v3.09C3.515 21.3 7.565 24 12.255 24z"></path>
+            <path fill="#FBBC05" d="M5.525 14.29c-.25-.72-.38-1.49-.38-2.29s.14-1.57.38-2.29V6.62h-3.98a11.86 11.86 0 0 0 0 10.76l3.98-3.09z"></path>
+            <path fill="#EA4335" d="M12.255 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C18.205 1.19 15.495 0 12.255 0c-4.69 0-8.74 2.7-10.71 6.62l3.98 3.09c.95-2.85 3.6-4.96 6.73-4.96z"></path>
+          </svg>
+          <span data-google-label>Sign In with University Google Account</span>
+        </button>
+
+        <p class="auth-modal-footnote">
+          Verified university domains: <strong id="auth-modal-domains">g.batstate-u.edu.ph, batstate-u.edu.ph</strong>.
+        </p>
+      </div>
+    </div>
+
+    <script src="/assets/js/project-sync.js" defer></script>
+    <script src="/assets/js/landing.js" defer></script>
+    <script src="/assets/js/auth-modal.js" defer></script>
+  </body>
+</html>

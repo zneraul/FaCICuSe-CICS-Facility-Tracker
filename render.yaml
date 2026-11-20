@@ -1,0 +1,22 @@
+services:
+  - type: web
+    name: facicuse-backend
+    env: node
+    plan: free
+    buildCommand: npm install --legacy-peer-deps && npm run build
+    startCommand: npx tsx server.ts
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: DATABASE_URL
+        sync: false
+      - key: SESSION_SECRET
+        sync: false
+      - key: APP_URL
+        value: https://facicuse.vercel.app
+      - key: ALLOWED_UNIVERSITY_DOMAINS
+        value: g.batstate-u.edu.ph
+      - key: ADMIN_BOOTSTRAP_EMAILS
+        value: 24-03337@g.batstate-u.edu.ph

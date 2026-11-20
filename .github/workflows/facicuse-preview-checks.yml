@@ -1,0 +1,65 @@
+name: FaCICuSe Preview Checks
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches:
+      - fix/homepage-routing-authenticated-navigation-main
+
+permissions:
+  contents: read
+
+concurrency:
+  group: facicuse-checks-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test-and-build:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: facicuse_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d facicuse_test"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    timeout-minutes: 25
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Set up Java for Firebase Auth Emulator
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+      - name: Install dependencies
+        run: npm ci
+      - name: Run domain and mocked HTTP authentication regression tests
+        run: npm test
+      - name: Run Firebase Admin integration tests against Auth Emulator
+        run: npx --yes firebase-tools@14.22.0 emulators:exec --project big-anvil-0lvvl --only auth --config firebase.test.json "node --test server/application/useCases/firebaseAuthAdapter.integration.test.js"
+      - name: Run PostgreSQL adapter integration tests
+        env:
+          DATABASE_URL: postgres://postgres:postgres@127.0.0.1:5432/facicuse_test
+          SQL_SSL: 'false'
+        run: node --test server/adapters/outbound/postgresRepositories.integration.test.js
+      - name: Run end-to-end Firebase + PostgreSQL authentication flow
+        env:
+          DATABASE_URL: postgres://postgres:postgres@127.0.0.1:5432/facicuse_test
+          SQL_SSL: 'false'
+        run: npx --yes firebase-tools@14.22.0 emulators:exec --project big-anvil-0lvvl --only auth --config firebase.test.json "node --test server/application/useCases/firebasePostgresAuth.integration.test.js"
+      - name: Build frontend
+        run: npm run build

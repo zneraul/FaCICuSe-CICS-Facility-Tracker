@@ -1,0 +1,387 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "Verified BatStateU CICS user account profile and assigned role.",
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$",
+          "description": "Firebase Auth UID or canonical user identifier."
+        },
+        "email": {
+          "type": "string",
+          "format": "email",
+          "maxLength": 160,
+          "description": "Verified university email address."
+        },
+        "fullName": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 100,
+          "description": "Full display name of the student, professor, or administrator."
+        },
+        "role": {
+          "type": "string",
+          "enum": ["student", "professor", "admin"],
+          "description": "Role-based access control level."
+        },
+        "department": {
+          "type": "string",
+          "maxLength": 120,
+          "description": "Academic department or college affiliation."
+        },
+        "academicBlock": {
+          "type": "string",
+          "maxLength": 12,
+          "pattern": "^IT-[1-4][12][0-9]{2}$",
+          "description": "Optional BSIT academic block code."
+        },
+        "emailVerified": {
+          "type": "boolean",
+          "description": "Whether the user's university email has been verified."
+        },
+        "isActive": {
+          "type": "boolean",
+          "description": "Whether the account is active."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server creation timestamp."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server last-updated timestamp."
+        }
+      },
+      "required": ["uid", "email", "fullName", "role", "department", "emailVerified", "isActive", "createdAt", "updatedAt"]
+    },
+    "AdminGrant": {
+      "title": "AdminGrant",
+      "description": "Trusted marker document granting System Administrator privileges.",
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "email": {
+          "type": "string",
+          "format": "email",
+          "maxLength": 160
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": ["uid", "email", "createdAt"]
+    },
+    "Facility": {
+      "title": "Facility",
+      "description": "Canonical CICS Building facility room or office across Floors 1 to 5.",
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 32,
+          "pattern": "^[A-Z0-9\\-]+$"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 120
+        },
+        "category": {
+          "type": "string",
+          "enum": ["Learning", "Administrative", "Support"]
+        },
+        "building": {
+          "type": "string",
+          "maxLength": 80
+        },
+        "floor": {
+          "type": "string",
+          "maxLength": 40
+        },
+        "description": {
+          "type": "string",
+          "minLength": 10,
+          "maxLength": 500
+        },
+        "status": {
+          "type": "string",
+          "enum": ["Available", "Maintenance", "Restricted"]
+        },
+        "openHour": {
+          "type": "string",
+          "maxLength": 5,
+          "pattern": "^([01][0-9]|2[0-3]):[0-5][0-9]$"
+        },
+        "closeHour": {
+          "type": "string",
+          "maxLength": 5,
+          "pattern": "^([01][0-9]|2[0-3]):[0-5][0-9]$"
+        },
+        "isReservable": {
+          "type": "boolean"
+        },
+        "isArchived": {
+          "type": "boolean"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": ["code", "name", "category", "building", "floor", "description", "status", "openHour", "closeHour", "isReservable", "isArchived", "createdAt", "updatedAt"]
+    },
+    "Reservation": {
+      "title": "Reservation",
+      "description": "Time-slotted reservation request for a reservable CICS Building learning space.",
+      "type": "object",
+      "properties": {
+        "facilityId": {
+          "type": "string",
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "userId": {
+          "type": "string",
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "reservationDate": {
+          "type": "string",
+          "maxLength": 10,
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+        },
+        "startTime": {
+          "type": "string",
+          "maxLength": 5,
+          "pattern": "^([01][0-9]|2[0-3]):[0-5][0-9]$"
+        },
+        "endTime": {
+          "type": "string",
+          "maxLength": 5,
+          "pattern": "^([01][0-9]|2[0-3]):[0-5][0-9]$"
+        },
+        "purpose": {
+          "type": "string",
+          "minLength": 5,
+          "maxLength": 300
+        },
+        "academicBlock": {
+          "type": "string",
+          "maxLength": 12,
+          "pattern": "^IT-[1-4][12][0-9]{2}$"
+        },
+        "attendeesCount": {
+          "type": "integer"
+        },
+        "status": {
+          "type": "string",
+          "enum": ["Pending", "Confirmed", "Rejected", "Cancelled", "Completed"]
+        },
+        "reviewNote": {
+          "type": "string",
+          "maxLength": 300
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": ["facilityId", "userId", "reservationDate", "startTime", "endTime", "purpose", "attendeesCount", "status", "createdAt", "updatedAt"]
+    },
+    "MaintenanceIssue": {
+      "title": "MaintenanceIssue",
+      "description": "Facility maintenance ticket reported by a student, professor, or administrator.",
+      "type": "object",
+      "properties": {
+        "facilityId": {
+          "type": "string",
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "reporterId": {
+          "type": "string",
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "category": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 60
+        },
+        "priority": {
+          "type": "string",
+          "enum": ["Low", "Medium", "High", "Urgent"]
+        },
+        "title": {
+          "type": "string",
+          "minLength": 4,
+          "maxLength": 140
+        },
+        "description": {
+          "type": "string",
+          "minLength": 10,
+          "maxLength": 2000
+        },
+        "status": {
+          "type": "string",
+          "enum": ["Open", "In Progress", "Resolved", "Closed"]
+        },
+        "actionTaken": {
+          "type": "string",
+          "maxLength": 500
+        },
+        "assignedTo": {
+          "type": "string",
+          "maxLength": 100
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": ["facilityId", "reporterId", "category", "priority", "title", "description", "status", "createdAt", "updatedAt"]
+    },
+    "Notification": {
+      "title": "Notification",
+      "description": "User-scoped notification about reservation or maintenance updates.",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 140
+        },
+        "message": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 500
+        },
+        "type": {
+          "type": "string",
+          "enum": ["info", "success", "warning", "error"]
+        },
+        "linkPath": {
+          "type": "string",
+          "maxLength": 160
+        },
+        "isRead": {
+          "type": "boolean"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": ["userId", "title", "message", "type", "isRead", "createdAt", "updatedAt"]
+    },
+    "AuditLog": {
+      "title": "AuditLog",
+      "description": "Immutable administrative and operational audit trail entry.",
+      "type": "object",
+      "properties": {
+        "actorUid": {
+          "type": "string",
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "actorEmail": {
+          "type": "string",
+          "format": "email",
+          "maxLength": 160
+        },
+        "actorRole": {
+          "type": "string",
+          "enum": ["student", "professor", "admin"]
+        },
+        "action": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 80
+        },
+        "entityType": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 60
+        },
+        "entityId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "details": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 500
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": ["actorUid", "actorEmail", "actorRole", "action", "entityType", "entityId", "details", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/UserProfile" },
+      "description": "Private user profiles and role records isolated to owner and administrators."
+    },
+    "/admins/{userId}": {
+      "schema": { "$ref": "#/entities/AdminGrant" },
+      "description": "Trusted administrator grant markers."
+    },
+    "/facilities/{facilityId}": {
+      "schema": { "$ref": "#/entities/Facility" },
+      "description": "Canonical 37 CICS Building facility inventory."
+    },
+    "/reservations/{reservationId}": {
+      "schema": { "$ref": "#/entities/Reservation" },
+      "description": "Facility reservation requests and approved schedules."
+    },
+    "/maintenanceIssues/{issueId}": {
+      "schema": { "$ref": "#/entities/MaintenanceIssue" },
+      "description": "Reported CICS Building maintenance tickets."
+    },
+    "/notifications/{notificationId}": {
+      "schema": { "$ref": "#/entities/Notification" },
+      "description": "User-scoped notifications."
+    },
+    "/auditLogs/{auditLogId}": {
+      "schema": { "$ref": "#/entities/AuditLog" },
+      "description": "Immutable administrative audit logs (admin-read only)."
+    }
+  }
+}
