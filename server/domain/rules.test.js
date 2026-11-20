@@ -845,6 +845,39 @@ test('computeAdminAnalytics and computeDashboardMetrics exclude any legacy isDem
   assert.equal(analytics.totals.users, 1);
 });
 
+test('computeAdminAnalytics exposes facility utilization, booking demand, and maintenance frequency insights', () => {
+  const analytics = computeAdminAnalytics({
+    facilities: [{ ...sampleFacility, id: 1, capacity: 28, openHour: '08:00', closeHour: '20:00' }],
+    reservations: [
+      {
+        id: 1,
+        facilityId: 1,
+        reservationDate: '2026-11-20',
+        startTime: '09:00',
+        endTime: '11:00',
+        attendeesCount: 14,
+        status: 'Confirmed',
+      },
+    ],
+    issues: [
+      { id: 1, facilityId: 1, status: 'Open', category: 'Electrical', createdAt: '2026-11-03T08:00:00.000Z' },
+      { id: 2, facilityId: 1, status: 'Resolved', category: 'Electrical', createdAt: '2026-11-18T08:00:00.000Z' },
+    ],
+    users: [],
+  });
+
+  assert.equal(analytics.totals.availableFacilities, 1);
+  assert.equal(analytics.totals.scheduledFacilities, 1);
+  assert.equal(analytics.facilityBreakdown[0].utilizationPct, 16.7);
+  assert.equal(analytics.facilityBreakdown[0].bookingDemandPct, 50);
+  assert.equal(analytics.highestUtilizationFacilities[0].facilityId, 1);
+  assert.equal(analytics.highestBookingDemandFacilities[0].peakAttendees, 14);
+  assert.equal(analytics.maintenanceByFacility[0].issueCount, 2);
+  assert.deepEqual(analytics.maintenanceFrequencyByMonth, [
+    { month: '2026-11', count: 2 },
+  ]);
+});
+
 test('localStoreRepositories filter out any legacy isDemo records when reading from disk', async () => {
   const tmpStore = path.join(os.tmpdir(), `facicuse-legacy-demo-${Date.now()}.json`);
   try {
