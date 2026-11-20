@@ -17,6 +17,7 @@ import {
   Wrench,
 } from 'lucide-react';
 import { PublicLayout } from '../components/PublicLayout.jsx';
+import { CicsFlightGame } from '../components/CicsFlightGame.jsx';
 import { FacilityImage } from '../components/FacilityImage.jsx';
 import { useAuth } from '../context/AuthContext.jsx';
 import { useAuthModal } from '../context/AuthModalContext.jsx';
@@ -348,21 +349,33 @@ export function LandingPage() {
           </div>
         </div>
 
-        <div style={{ marginBottom: '1.5rem', overflowX: 'auto', paddingBottom: '0.25rem' }}>
-          <div className="v10-tabs" role="tablist" aria-label="Facility categories">
-            {CATEGORIES.map((cat) => (
-              <button
-                key={cat}
-                type="button"
-                role="tab"
-                aria-selected={category === cat}
-                className={`v10-tab-btn ${category === cat ? 'active' : ''}`}
-                onClick={() => setCategory(cat)}
-              >
-                {cat}
-              </button>
-            ))}
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            gap: '0.75rem',
+            flexWrap: 'wrap',
+            marginBottom: '1.5rem',
+          }}
+        >
+          <div style={{ overflowX: 'auto', paddingBottom: '0.25rem', maxWidth: '100%' }}>
+            <div className="v10-tabs" role="tablist" aria-label="Facility categories">
+              {CATEGORIES.map((cat) => (
+                <button
+                  key={cat}
+                  type="button"
+                  role="tab"
+                  aria-selected={category === cat}
+                  className={`v10-tab-btn ${category === cat ? 'active' : ''}`}
+                  onClick={() => setCategory(cat)}
+                >
+                  {cat}
+                </button>
+              ))}
+            </div>
           </div>
+          <Link to="/facilities" className="btn btn-glass btn-sm">Browse All Spaces</Link>
         </div>
 
         {loading ? (
@@ -647,7 +660,6 @@ export function LandingPage() {
               Each role accesses only the booking, maintenance, or governance tools it needs.
             </p>
           </div>
-          <Link to="/facilities" className="btn btn-glass btn-sm">Browse All Spaces</Link>
         </div>
         <div className="roles-grid">
           <article className="glass-panel" style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
@@ -761,6 +773,8 @@ export function LandingPage() {
           </div>
         </div>
       </section>
+
+      <CicsFlightGame />
     </PublicLayout>
   );
 }

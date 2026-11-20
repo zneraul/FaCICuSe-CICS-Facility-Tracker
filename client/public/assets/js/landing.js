@@ -113,7 +113,9 @@
         if (Date.now() < state.manualLockUntil) return;
 
         const header = document.querySelector('.public-header');
-        const activationLine = (header?.getBoundingClientRect().bottom || 0) + 24;
+        // Highlight the incoming section while its heading is still visible
+        // below the sticky header, before the header can cover it.
+        const activationLine = (header?.getBoundingClientRect().bottom || 0) + 72;
         let currentSection = 'home';
         ['home', 'facilities', 'reservations', 'about', 'faq'].forEach((sectionId) => {
           const section = document.getElementById(sectionId);

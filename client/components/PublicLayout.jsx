@@ -31,7 +31,9 @@ export function PublicLayout({ children }) {
       frame = window.requestAnimationFrame(() => {
         if (isNavigatingToSection.current) return;
         const header = document.querySelector('.public-header');
-        const activationLine = (header?.getBoundingClientRect().bottom ?? 0) + 24;
+        // Select the next section while its heading is still comfortably
+        // visible below the sticky header, before the header can cover it.
+        const activationLine = (header?.getBoundingClientRect().bottom ?? 0) + 72;
         let currentSection = 'home';
 
         sectionIds.forEach((sectionId) => {

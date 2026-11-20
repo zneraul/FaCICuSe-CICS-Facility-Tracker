@@ -225,6 +225,8 @@
               <button type="button" role="tab" aria-selected="false" class="v10-tab-btn" data-category="Support">Support (5)</button>
             </div>
 
+            <a href="/facilities" class="btn btn-glass btn-sm">Browse All Spaces</a>
+
             <button
               type="button"
               id="landing-reservable-toggle"
@@ -521,6 +523,49 @@
             </div>
           </div>
         </section>
+
+        <section class="landing-section cics-flight-section" aria-labelledby="cics-flight-heading">
+          <div class="section-header-row">
+            <div>
+              <span class="section-kicker">Quick Campus Break</span>
+              <h2 id="cics-flight-heading" class="section-title">CICS Flight</h2>
+              <p class="section-subcopy">Guide a little paper plane between the room pillars. It is just for fun; your best score stays on this device.</p>
+            </div>
+          </div>
+
+          <div class="cics-flight-game" data-cics-flight-game>
+            <div class="cics-flight-toolbar">
+              <div class="cics-flight-scores" aria-label="Game scores">
+                <span>Score <strong data-flight-score>0</strong></span>
+                <span>Best <strong data-flight-best>0</strong></span>
+              </div>
+              <div class="cics-flight-controls">
+                <button type="button" class="btn btn-coral btn-sm" data-flight-start>Play</button>
+                <button type="button" class="btn btn-glass btn-sm" data-flight-pause disabled>Pause</button>
+              </div>
+            </div>
+
+            <canvas
+              class="cics-flight-canvas"
+              data-flight-canvas
+              tabindex="0"
+              aria-label="CICS Flight game. Tap or click to fly, or focus this game and press Space or Arrow Up. Press Escape to pause."
+            >
+              CICS Flight: tap, click, or press Space to fly between the room pillars.
+            </canvas>
+
+            <p class="cics-flight-status" data-flight-status role="status" aria-live="polite">Press Play, tap, or press Space to start.</p>
+
+            <div class="cics-flight-cta" data-flight-cta hidden>
+              <span>Ready for the real CICS spaces?</span>
+              <div>
+                <a href="/facilities" class="btn btn-on-coral btn-sm">Browse Spaces</a>
+                <a href="/#reservations" class="btn btn-cta-secondary btn-sm">Check Availability</a>
+              </div>
+            </div>
+          </div>
+          <p class="cics-flight-hint">Controls: tap or click the playfield, press Space / ↑ to fly, or press Esc to pause.</p>
+        </section>
       </main>
 
       <!-- Semantic Footer -->
@@ -725,6 +770,7 @@
     </div>
 
     <script src="/assets/js/project-sync.js" defer></script>
+    <script src="/assets/js/cics-flight.js" defer></script>
     <script src="/assets/js/landing.js" defer></script>
     <script src="/assets/js/auth-modal.js" defer></script>
   </body>
