@@ -11,7 +11,6 @@ import {
   RotateCcw,
   Search,
   ShieldCheck,
-  Users,
   Wrench,
   X,
 } from 'lucide-react';
@@ -268,9 +267,7 @@ export function AdminAnalyticsPage() {
     [facilitySorted, selectedFacilityId]
   );
   const highestUtilizationFacilities = analytics?.highestUtilizationFacilities || [];
-  const underutilizedFacilities = analytics?.underutilizedFacilities || [];
   const highestBookingDemandFacilities = analytics?.highestBookingDemandFacilities || [];
-  const maintenanceByFacility = analytics?.maintenanceByFacility || [];
   const maintenanceFrequencyByMonth = analytics?.maintenanceFrequencyByMonth || [];
 
   const maxFacilityRequests = Math.max(1, ...facilitySorted.map((f) => f.totalRequests));
