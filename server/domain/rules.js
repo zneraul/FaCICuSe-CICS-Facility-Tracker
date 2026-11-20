@@ -550,15 +550,38 @@ export function computeAdminAnalytics({
     ).length;
 
     let scheduledHours = 0;
+    const scheduledDates = new Set();
+    let peakAttendees = 0;
     for (const r of facilityReservations) {
       if (r.status === ReservationStatus.CONFIRMED || r.status === ReservationStatus.COMPLETED) {
         try {
           scheduledHours += (toMinutes(r.endTime) - toMinutes(r.startTime)) / 60;
+          if (r.reservationDate) scheduledDates.add(r.reservationDate);
         } catch {
-          // ignore
+          // ignore invalid legacy time values
         }
       }
+      if (
+        (r.status === ReservationStatus.CONFIRMED || r.status === ReservationStatus.PENDING) &&
+        Number.isFinite(Number(r.attendeesCount))
+      ) {
+        peakAttendees = Math.max(peakAttendees, Number(r.attendeesCount));
+      }
     }
+
+    let operatingHoursPerDay = 0;
+    try {
+      operatingHoursPerDay = Math.max(0, (toMinutes(facility.closeHour) - toMinutes(facility.openHour)) / 60);
+    } catch {
+      operatingHoursPerDay = 0;
+    }
+    const utilizationDenominator = operatingHoursPerDay * scheduledDates.size;
+    const utilizationPct = utilizationDenominator > 0
+      ? Number(Math.min(100, (scheduledHours / utilizationDenominator) * 100).toFixed(1))
+      : 0;
+    const bookingDemandPct = Number(facility.capacity) > 0
+      ? Number(((peakAttendees / Number(facility.capacity)) * 100).toFixed(1))
+      : null;
 
     return {
       facilityId: facility.id,
@@ -578,10 +601,41 @@ export function computeAdminAnalytics({
       rejectedCount,
       cancelledCount,
       scheduledHours: Number(scheduledHours.toFixed(1)),
+      scheduledDates: scheduledDates.size,
+      utilizationPct,
+      peakAttendees,
+      bookingDemandPct,
       issueCount: facilityIssues.length,
       openIssueCount,
     };
   });
+
+  const mostUsedFacilities = [...facilityBreakdown]
+    .sort((a, b) => b.totalRequests - a.totalRequests || b.scheduledHours - a.scheduledHours)
+    .slice(0, 5);
+  const highestUtilizationFacilities = [...facilityBreakdown]
+    .filter((row) => row.utilizationPct > 0)
+    .sort((a, b) => b.utilizationPct - a.utilizationPct)
+    .slice(0, 5);
+  const underutilizedFacilities = [...facilityBreakdown]
+    .filter((row) => row.isReservable && row.status === FacilityStatus.AVAILABLE)
+    .sort((a, b) => a.utilizationPct - b.utilizationPct || a.scheduledHours - b.scheduledHours)
+    .slice(0, 5);
+  const highestBookingDemandFacilities = [...facilityBreakdown]
+    .filter((row) => row.bookingDemandPct !== null && row.peakAttendees > 0)
+    .sort((a, b) => b.bookingDemandPct - a.bookingDemandPct)
+    .slice(0, 5);
+  const maintenanceByFacility = [...facilityBreakdown]
+    .filter((row) => row.issueCount > 0)
+    .sort((a, b) => b.issueCount - a.issueCount)
+    .slice(0, 5);
+  const maintenanceFrequencyByMonth = new Map();
+  for (const issue of safeIssues) {
+    const rawDate = issue.createdAt || issue.reportedAt || issue.created_at;
+    const date = rawDate ? String(rawDate).slice(0, 7) : '';
+    if (!/^\\d{4}-\\d{2}$/.test(date)) continue;
+    maintenanceFrequencyByMonth.set(date, (maintenanceFrequencyByMonth.get(date) || 0) + 1);
+  }
 
   const categoryMap = new Map();
   for (const row of facilityBreakdown) {
@@ -632,6 +686,7 @@ export function computeAdminAnalytics({
       availableFacilities: safeFacilities.filter(
         (f) => f.isReservable !== false && f.status === FacilityStatus.AVAILABLE
       ).length,
+      scheduledFacilities: facilityBreakdown.filter((f) => f.confirmedCount > 0).length,
       reservations: safeReservations.length,
       confirmedScheduledHours: Number(confirmedScheduledHours.toFixed(1)),
       avgDurationHours,
@@ -646,6 +701,14 @@ export function computeAdminAnalytics({
     issuesByCategory,
     usersByRole,
     facilityBreakdown,
+    mostUsedFacilities,
+    highestUtilizationFacilities,
+    underutilizedFacilities,
+    highestBookingDemandFacilities,
+    maintenanceByFacility,
+    maintenanceFrequencyByMonth: Array.from(maintenanceFrequencyByMonth.entries())
+      .sort(([a], [b]) => a.localeCompare(b))
+      .map(([month, count]) => ({ month, count })),
     categoryUtilization: Array.from(categoryMap.values()),
     activityOverTime,
     peakBookingPeriods,
