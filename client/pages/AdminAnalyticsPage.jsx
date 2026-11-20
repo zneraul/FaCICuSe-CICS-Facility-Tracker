@@ -544,11 +544,11 @@ export function AdminAnalyticsPage() {
 
               <article className="analytics-kpi-card">
                 <div className="analytics-kpi-head">
-                  <span>Rooms with Confirmed Bookings</span>
+                  <span>Facilities with Approved Bookings</span>
                   <CalendarClock size={15} aria-hidden="true" />
                 </div>
                 <div className="analytics-kpi-val">{analytics.totals.scheduledFacilities}</div>
-                <div className="analytics-kpi-foot">Facilities with confirmed reservations in the selected records</div>
+                <div className="analytics-kpi-foot">Facilities with confirmed or completed bookings in the selected records</div>
               </article>
             </section>
 
@@ -655,6 +655,46 @@ export function AdminAnalyticsPage() {
                       </div>
                     ))}
                   </div>
+                )}
+              </article>
+
+              <article className="analytics-card">
+                <div className="analytics-card-header">
+                  <div>
+                    <h2 className="analytics-card-title">Facility Condition Overview</h2>
+                    <p className="analytics-card-sub">Current recorded status of facilities in the selected directory filters.</p>
+                  </div>
+                </div>
+                {Object.keys(analytics.facilityStatusCounts || {}).length === 0 ? (
+                  <div className="analytics-empty">No facility status records are available.</div>
+                ) : (
+                  <div className="analytics-meter-list">
+                    {Object.entries(analytics.facilityStatusCounts).map(([status, count]) => (
+                      <div key={status} className="analytics-meter-item">
+                        <div className="analytics-meter-top"><span>{status}</span><strong className="tabular">{count} facilities</strong></div>
+                        <div className="analytics-meter-track">
+                          <div className="analytics-meter-fill-blue" style={{ width: `${(count / Math.max(1, analytics.totals.facilities)) * 100}%` }} />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </article>
+
+              <article className="analytics-card">
+                <div className="analytics-card-header">
+                  <div>
+                    <h2 className="analytics-card-title">Maintenance Resolution Performance</h2>
+                    <p className="analytics-card-sub">Share of recorded maintenance reports marked Resolved or Closed.</p>
+                  </div>
+                </div>
+                {analytics.maintenanceResolutionRatePct === null ? (
+                  <div className="analytics-empty">No maintenance reports are available to calculate a resolution rate.</div>
+                ) : (
+                  <>
+                    <div className="analytics-kpi-val">{analytics.maintenanceResolutionRatePct}%</div>
+                    <p className="analytics-card-sub">Resolved or closed: {analytics.issuesByStatus.Resolved + analytics.issuesByStatus.Closed} of {analytics.totals.issues} reports.</p>
+                  </>
                 )}
               </article>
 
