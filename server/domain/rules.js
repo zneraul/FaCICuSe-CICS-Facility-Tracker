@@ -633,7 +633,7 @@ export function computeAdminAnalytics({
   for (const issue of safeIssues) {
     const rawDate = issue.createdAt || issue.reportedAt || issue.created_at;
     const date = rawDate ? String(rawDate).slice(0, 7) : '';
-    if (!/^\\d{4}-\\d{2}$/.test(date)) continue;
+    if (!/^\d{4}-\d{2}$/.test(date)) continue;
     maintenanceFrequencyByMonth.set(date, (maintenanceFrequencyByMonth.get(date) || 0) + 1);
   }
 
