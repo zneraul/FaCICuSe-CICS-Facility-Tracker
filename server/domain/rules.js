@@ -574,7 +574,7 @@ export function computeAdminAnalytics({
         }
       }
       if (
-        (r.status === ReservationStatus.CONFIRMED || r.status === ReservationStatus.PENDING) &&
+        (r.status === ReservationStatus.CONFIRMED || r.status === ReservationStatus.PENDING || r.status === ReservationStatus.COMPLETED) &&
         Number.isFinite(Number(r.attendeesCount))
       ) {
         peakAttendees = Math.max(peakAttendees, Number(r.attendeesCount));
@@ -623,6 +623,7 @@ export function computeAdminAnalytics({
   });
 
   const mostUsedFacilities = [...facilityBreakdown]
+    .filter((row) => row.totalRequests > 0)
     .sort((a, b) => b.totalRequests - a.totalRequests || b.scheduledHours - a.scheduledHours)
     .slice(0, 5);
   const highestUtilizationFacilities = [...facilityBreakdown]
@@ -669,6 +670,16 @@ export function computeAdminAnalytics({
     c.issueCount += row.issueCount;
   }
 
+  const facilityStatusCounts = {};
+  for (const facility of safeFacilities) {
+    const status = facility.status || 'Unspecified';
+    facilityStatusCounts[status] = (facilityStatusCounts[status] || 0) + 1;
+  }
+  const resolvedIssueCount = issuesByStatus.Resolved + issuesByStatus.Closed;
+  const maintenanceResolutionRatePct = safeIssues.length > 0
+    ? Math.round((resolvedIssueCount / safeIssues.length) * 100)
+    : null;
+
   const usersByRole = {
     student: allUsers.filter((u) => u.role === UserRole.STUDENT).length,
     professor: allUsers.filter((u) => u.role === UserRole.PROFESSOR).length,
@@ -711,6 +722,8 @@ export function computeAdminAnalytics({
     issuesByStatus,
     issuesByPriority,
     issuesByCategory,
+    facilityStatusCounts,
+    maintenanceResolutionRatePct,
     usersByRole,
     facilityBreakdown,
     mostUsedFacilities,
