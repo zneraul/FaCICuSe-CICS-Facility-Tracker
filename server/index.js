@@ -62,8 +62,7 @@ export async function startServer() {
   } else {
     const distDir = path.join(rootDir, 'dist');
 
-    // Match Vercel's production routing: the public root uses the long-form
-    // standalone landing page, while all other client routes use the React SPA.
+    // The public root serves the standalone landing page; app routes use the React SPA.
     app.get('/', (_req, res) => {
       res.sendFile(path.join(distDir, 'landing.html'));
     });

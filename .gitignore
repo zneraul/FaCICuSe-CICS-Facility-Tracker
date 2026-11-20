@@ -9,4 +9,3 @@ coverage/
 .facicuse-runtime-db.json
 .facicuse-runtime-db.json.tmp
 .playwright-cli/
-.vercel

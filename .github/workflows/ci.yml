@@ -1,17 +1,17 @@
-name: FaCICuSe Preview Checks
+name: FaCICuSe CI
 
 on:
   pull_request:
     branches: [main]
   push:
     branches:
-      - fix/homepage-routing-authenticated-navigation-main
+      - main
 
 permissions:
   contents: read
 
 concurrency:
-  group: facicuse-checks-${{ github.ref }}
+  group: facicuse-cics-tracker-ci-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
