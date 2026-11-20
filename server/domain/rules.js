@@ -532,7 +532,7 @@ export function computeAdminAnalytics({
 
   const reservationDates = safeReservations
     .map((reservation) => reservation.reservationDate)
-    .filter((date) => /^\\d{4}-\\d{2}-\\d{2}$/.test(String(date || '')))
+    .filter((date) => /^\d{4}-\d{2}-\d{2}$/.test(String(date || '')))
     .sort();
   const periodStart = startDateFilter || reservationDates[0] || '';
   const periodEnd = endDateFilter || reservationDates[reservationDates.length - 1] || '';
