@@ -26,11 +26,11 @@ import {
   formatHourLabel,
   formatPeriodTitle,
   formatShortDayHeader,
+  getCampusTodayIsoDate,
   getMonthGridDays,
   getPeriodRange,
   getWeekDays,
   timeToMinutes,
-  toIsoDate,
 } from '../utils/calendarUtils.js';
 import {
   ALL_WEEKDAYS,
@@ -60,7 +60,7 @@ function getStatusPillClass(status) {
 export function CalendarPage() {
   const { user } = useAuth();
   const isAdmin = user?.role === 'admin';
-  const todayIso = useMemo(() => toIsoDate(new Date()), []);
+  const todayIso = useMemo(() => getCampusTodayIsoDate(), []);
 
   const [view, setView] = useState('month');
   const [anchorDate, setAnchorDate] = useState(todayIso);

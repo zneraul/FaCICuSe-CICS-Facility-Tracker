@@ -41,9 +41,23 @@
   const faqTriggers = Array.from(document.querySelectorAll('#landing-faq-list .faq-trigger'));
 
   function getDefaultTomorrowIso() {
-    const d = new Date();
-    d.setDate(d.getDate() + 1);
-    return d.toISOString().slice(0, 10);
+    const parts = new Intl.DateTimeFormat('en-US', {
+      timeZone: 'Asia/Manila',
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+    }).formatToParts(new Date());
+    const values = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
+    const tomorrow = new Date(`${values.year}-${values.month}-${values.day}T12:00:00+08:00`);
+    tomorrow.setUTCDate(tomorrow.getUTCDate() + 1);
+    const tomorrowParts = new Intl.DateTimeFormat('en-US', {
+      timeZone: 'Asia/Manila',
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+    }).formatToParts(tomorrow);
+    const nextValues = Object.fromEntries(tomorrowParts.map(({ type, value }) => [type, value]));
+    return `${nextValues.year}-${nextValues.month}-${nextValues.day}`;
   }
 
   function statusClassName(status) {
@@ -89,14 +103,53 @@
 
   // 1. Same-page smooth navigation & active section highlight tracking
   function initNavigation() {
+    let manualNavTimer = 0;
+    let scrollFrame = 0;
+
+    function updateActiveSectionFromScroll() {
+      if (Date.now() < state.manualLockUntil) return;
+      window.cancelAnimationFrame(scrollFrame);
+      scrollFrame = window.requestAnimationFrame(() => {
+        if (Date.now() < state.manualLockUntil) return;
+
+        const header = document.querySelector('.public-header');
+        const activationLine = (header?.getBoundingClientRect().bottom || 0) + 24;
+        let currentSection = 'home';
+        ['home', 'facilities', 'reservations', 'about', 'faq'].forEach((sectionId) => {
+          const section = document.getElementById(sectionId);
+          if (section && section.getBoundingClientRect().top <= activationLine) {
+            currentSection = sectionId;
+          }
+        });
+
+        setActiveSection(currentSection);
+      });
+    }
+
+    function holdSectionHighlight(sectionId) {
+      setActiveSection(sectionId);
+      state.manualLockUntil = Date.now() + 2500;
+      window.clearTimeout(manualNavTimer);
+      manualNavTimer = window.setTimeout(() => {
+        state.manualLockUntil = 0;
+        updateActiveSectionFromScroll();
+      }, 2500);
+    }
+
+    function finishSmoothNavigation() {
+      if (Date.now() >= state.manualLockUntil) return;
+      state.manualLockUntil = 0;
+      window.clearTimeout(manualNavTimer);
+      updateActiveSectionFromScroll();
+    }
+
     allSectionLinks.forEach((link) => {
       link.addEventListener('click', (event) => {
         const sectionId = link.dataset.sectionLink;
         if (!sectionId) return;
         event.preventDefault();
         setMobileMenuOpen(false);
-        setActiveSection(sectionId);
-        state.manualLockUntil = Date.now() + 850;
+        holdSectionHighlight(sectionId);
         window.history.replaceState(null, '', '#' + sectionId);
         scrollToSection(sectionId, 'smooth');
       });
@@ -121,67 +174,16 @@
       }
     });
 
-    const visibleRatios = new Map();
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            visibleRatios.set(entry.target.id, entry.intersectionRatio);
-          } else {
-            visibleRatios.delete(entry.target.id);
-          }
-        });
-
-        if (Date.now() < state.manualLockUntil) return;
-
-        if (window.scrollY < 70) {
-          setActiveSection('home');
-          return;
-        }
-
-        const nearBottom =
-          window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 40;
-        if (nearBottom) {
-          setActiveSection('about');
-          return;
-        }
-
-        let bestId = '';
-        let bestScore = -Infinity;
-        SECTION_IDS.forEach((id) => {
-          const el = document.getElementById(id);
-          if (!el) return;
-          const rect = el.getBoundingClientRect();
-          if (rect.bottom < 88 || rect.top > window.innerHeight * 0.72) return;
-          const headerDistance = Math.abs(rect.top - 104);
-          const ratioBonus = (visibleRatios.get(id) || 0) * 200;
-          const score = ratioBonus - headerDistance;
-          if (score > bestScore) {
-            bestScore = score;
-            bestId = id;
-          }
-        });
-
-        if (bestId) {
-          setActiveSection(bestId);
-        }
-      },
-      {
-        rootMargin: '-88px 0px -35% 0px',
-        threshold: [0, 0.1, 0.25, 0.5, 0.75],
-      }
-    );
-
-    SECTION_IDS.forEach((id) => {
-      const el = document.getElementById(id);
-      if (el) observer.observe(el);
-    });
+    window.addEventListener('scroll', updateActiveSectionFromScroll, { passive: true });
+    window.addEventListener('resize', updateActiveSectionFromScroll);
+    document.addEventListener('scrollend', finishSmoothNavigation);
 
     const initialHash = window.location.hash ? window.location.hash.replace('#', '') : '';
     if (initialHash && SECTION_IDS.includes(initialHash)) {
-      setActiveSection(initialHash);
-      state.manualLockUntil = Date.now() + 1000;
+      holdSectionHighlight(initialHash);
       window.setTimeout(() => scrollToSection(initialHash, 'smooth'), 60);
+    } else {
+      updateActiveSectionFromScroll();
     }
   }
 

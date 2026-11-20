@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
 import { useAuth } from '../context/AuthContext.jsx';
@@ -11,9 +11,65 @@ export function PublicLayout({ children }) {
   const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [accountMenuOpen, setAccountMenuOpen] = useState(false);
+  const [activeSection, setActiveSection] = useState('home');
+  const isNavigatingToSection = useRef(false);
+  const scrollReleaseTimer = useRef(null);
 
-  const isFacilitiesActive = location.pathname.startsWith('/facilities') || (location.pathname === '/' && location.hash === '#facilities');
-  const isTimetableActive = location.pathname.startsWith('/timetable');
+  const isFacilitiesActive = location.pathname.startsWith('/facilities') || (location.pathname === '/' && activeSection === 'facilities');
+
+  useEffect(() => {
+    if (location.pathname !== '/') {
+      setActiveSection('');
+      return undefined;
+    }
+
+    const sectionIds = ['home', 'facilities', 'reservations', 'about', 'faq'];
+    let frame = 0;
+    const updateActiveSection = () => {
+      if (isNavigatingToSection.current) return;
+      window.cancelAnimationFrame(frame);
+      frame = window.requestAnimationFrame(() => {
+        if (isNavigatingToSection.current) return;
+        const header = document.querySelector('.public-header');
+        const activationLine = (header?.getBoundingClientRect().bottom ?? 0) + 24;
+        let currentSection = 'home';
+
+        sectionIds.forEach((sectionId) => {
+          const section = document.getElementById(sectionId);
+          if (section && section.getBoundingClientRect().top <= activationLine) {
+            currentSection = sectionId;
+          }
+        });
+
+        setActiveSection(currentSection);
+      });
+    };
+    const finishSectionNavigation = () => {
+      if (!isNavigatingToSection.current) {
+        updateActiveSection();
+        return;
+      }
+
+      isNavigatingToSection.current = false;
+      window.clearTimeout(scrollReleaseTimer.current);
+      scrollReleaseTimer.current = null;
+    };
+
+    updateActiveSection();
+    window.addEventListener('scroll', updateActiveSection, { passive: true });
+    window.addEventListener('resize', updateActiveSection);
+    document.addEventListener('scrollend', finishSectionNavigation);
+
+    return () => {
+      window.cancelAnimationFrame(frame);
+      window.clearTimeout(scrollReleaseTimer.current);
+      scrollReleaseTimer.current = null;
+      window.removeEventListener('scroll', updateActiveSection);
+      window.removeEventListener('resize', updateActiveSection);
+      document.removeEventListener('scrollend', finishSectionNavigation);
+    };
+  }, [location.pathname]);
+
   useEffect(() => {
     if (location.pathname !== '/') return undefined;
 
@@ -36,9 +92,28 @@ export function PublicLayout({ children }) {
   const handleHomeClick = () => {
     setMobileMenuOpen(false);
     setAccountMenuOpen(false);
+    setActiveSection('home');
+    isNavigatingToSection.current = true;
+    window.clearTimeout(scrollReleaseTimer.current);
+    scrollReleaseTimer.current = window.setTimeout(() => {
+      isNavigatingToSection.current = false;
+      scrollReleaseTimer.current = null;
+    }, 2000);
     if (location.pathname === '/') {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
+  };
+
+  const handleSectionClick = (sectionId) => {
+    setMobileMenuOpen(false);
+    setAccountMenuOpen(false);
+    setActiveSection(sectionId);
+    isNavigatingToSection.current = true;
+    window.clearTimeout(scrollReleaseTimer.current);
+    scrollReleaseTimer.current = window.setTimeout(() => {
+      isNavigatingToSection.current = false;
+      scrollReleaseTimer.current = null;
+    }, 2000);
   };
 
   return (
@@ -61,27 +136,44 @@ export function PublicLayout({ children }) {
           </Link>
 
           <nav className="public-nav-links" aria-label="Primary navigation">
-            <Link to="/" className="public-nav-link" onClick={handleHomeClick}>
+            <Link
+              to="/"
+              className={`public-nav-link ${location.pathname === '/' && activeSection === 'home' ? 'active' : ''}`}
+              aria-current={location.pathname === '/' && activeSection === 'home' ? 'location' : undefined}
+              onClick={handleHomeClick}
+            >
               Home
             </Link>
             <Link
               to="/#facilities"
               className={`public-nav-link ${isFacilitiesActive ? 'active' : ''}`}
               aria-current={isFacilitiesActive ? 'location' : undefined}
-              onClick={() => {
-                setMobileMenuOpen(false);
-                setAccountMenuOpen(false);
-              }}
+              onClick={() => handleSectionClick('facilities')}
             >
               Facilities
             </Link>
-            <Link to="/#reservations" className="public-nav-link">
+            <Link
+              to="/#reservations"
+              className={`public-nav-link ${location.pathname === '/' && activeSection === 'reservations' ? 'active' : ''}`}
+              aria-current={location.pathname === '/' && activeSection === 'reservations' ? 'location' : undefined}
+              onClick={() => handleSectionClick('reservations')}
+            >
               Availability
             </Link>
-            <Link to="/#about" className="public-nav-link">
+            <Link
+              to="/#about"
+              className={`public-nav-link ${location.pathname === '/' && activeSection === 'about' ? 'active' : ''}`}
+              aria-current={location.pathname === '/' && activeSection === 'about' ? 'location' : undefined}
+              onClick={() => handleSectionClick('about')}
+            >
               How It Works
             </Link>
-            <Link to="/#faq" className="public-nav-link">
+            <Link
+              to="/#faq"
+              className={`public-nav-link ${location.pathname === '/' && activeSection === 'faq' ? 'active' : ''}`}
+              aria-current={location.pathname === '/' && activeSection === 'faq' ? 'location' : undefined}
+              onClick={() => handleSectionClick('faq')}
+            >
               FAQ
             </Link>
           </nav>
@@ -186,23 +278,43 @@ export function PublicLayout({ children }) {
             className="public-mobile-drawer"
             aria-label="Mobile section navigation"
           >
-            <Link to="/" className="public-mobile-link" onClick={handleHomeClick}>
+            <Link
+              to="/"
+              className={`public-mobile-link ${location.pathname === '/' && activeSection === 'home' ? 'active' : ''}`}
+              aria-current={location.pathname === '/' && activeSection === 'home' ? 'location' : undefined}
+              onClick={handleHomeClick}
+            >
               Home
             </Link>
             <Link
               to="/#facilities"
               className={`public-mobile-link ${isFacilitiesActive ? 'active' : ''}`}
-              onClick={() => setMobileMenuOpen(false)}
+              onClick={() => handleSectionClick('facilities')}
             >
               Facilities
             </Link>
-            <Link to="/#reservations" className="public-mobile-link" onClick={() => setMobileMenuOpen(false)}>
+            <Link
+              to="/#reservations"
+              className={`public-mobile-link ${location.pathname === '/' && activeSection === 'reservations' ? 'active' : ''}`}
+              aria-current={location.pathname === '/' && activeSection === 'reservations' ? 'location' : undefined}
+              onClick={() => handleSectionClick('reservations')}
+            >
               Availability
             </Link>
-            <Link to="/#about" className="public-mobile-link" onClick={() => setMobileMenuOpen(false)}>
+            <Link
+              to="/#about"
+              className={`public-mobile-link ${location.pathname === '/' && activeSection === 'about' ? 'active' : ''}`}
+              aria-current={location.pathname === '/' && activeSection === 'about' ? 'location' : undefined}
+              onClick={() => handleSectionClick('about')}
+            >
               How It Works
             </Link>
-            <Link to="/#faq" className="public-mobile-link" onClick={() => setMobileMenuOpen(false)}>
+            <Link
+              to="/#faq"
+              className={`public-mobile-link ${location.pathname === '/' && activeSection === 'faq' ? 'active' : ''}`}
+              aria-current={location.pathname === '/' && activeSection === 'faq' ? 'location' : undefined}
+              onClick={() => handleSectionClick('faq')}
+            >
               FAQ
             </Link>
             {user ? (
@@ -248,7 +360,13 @@ export function PublicLayout({ children }) {
         )}
       </header>
 
-      <main className="public-main">{children}</main>
+      <main className="public-main">
+        {/* VARSITY stage + FX layer (required by the theme contract). */}
+        <div className="tp-web-stage">
+          <div className="tp-fx" aria-hidden="true" />
+          {children}
+        </div>
+      </main>
 
       <footer id="contact" className="public-footer" style={{ scrollMarginTop: '5.5rem' }}>
         <div className="public-footer-inner">

@@ -17,7 +17,7 @@ import {
 } from 'lucide-react';
 import { AppShell } from '../components/AppShell.jsx';
 import { apiRequest } from '../services/api.js';
-import { addDays, toIsoDate } from '../utils/calendarUtils.js';
+import { addDays, getCampusTodayIsoDate } from '../utils/calendarUtils.js';
 
 const STATUS_COLORS = {
   Confirmed: '#1d4ed8',
@@ -43,7 +43,7 @@ function buildSmoothLinePath(points) {
 }
 
 export function AdminAnalyticsPage() {
-  const todayIso = useMemo(() => toIsoDate(new Date()), []);
+  const todayIso = useMemo(() => getCampusTodayIsoDate(), []);
 
   const [filters, setFilters] = useState({
     search: '',

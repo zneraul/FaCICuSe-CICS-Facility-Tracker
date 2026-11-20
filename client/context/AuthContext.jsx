@@ -66,8 +66,6 @@ export function AuthProvider({ children }) {
         try {
           const data = await apiRequest('/auth/session');
           if (active) {
-            if (!data.user) {
-            }
             setUser(data.user || null);
           }
         } catch {

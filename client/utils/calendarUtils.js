@@ -5,6 +5,17 @@ export function toIsoDate(date) {
   return `${year}-${month}-${day}`;
 }
 
+export function getCampusTodayIsoDate(now = new Date()) {
+  const parts = new Intl.DateTimeFormat('en-US', {
+    timeZone: 'Asia/Manila',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).formatToParts(now);
+  const values = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
+  return `${values.year}-${values.month}-${values.day}`;
+}
+
 export function parseIsoDate(isoStr) {
   const [y, m, d] = String(isoStr || '').split('-').map(Number);
   if (!y || !m || !d) return new Date();

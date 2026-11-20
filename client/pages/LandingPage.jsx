@@ -21,6 +21,8 @@ import { FacilityImage } from '../components/FacilityImage.jsx';
 import { useAuth } from '../context/AuthContext.jsx';
 import { useAuthModal } from '../context/AuthModalContext.jsx';
 import { apiRequest } from '../services/api.js';
+import { initReveals } from '../utils/reveal.js';
+import { addDays, getCampusTodayIsoDate } from '../utils/calendarUtils.js';
 
 const CATEGORIES = ['All', 'Learning', 'Administrative', 'Support'];
 const FLOORS = ['All Floors', 'First Floor', 'Second Floor', 'Third Floor', 'Fourth Floor', 'Fifth Floor'];
@@ -76,9 +78,7 @@ const FAQ_ITEMS = [
 ];
 
 function getDefaultDate() {
-  const d = new Date();
-  d.setDate(d.getDate() + 1);
-  return d.toISOString().slice(0, 10);
+  return addDays(getCampusTodayIsoDate(), 1);
 }
 
 export function LandingPage() {
@@ -91,6 +91,12 @@ export function LandingPage() {
   const [floor, setFloor] = useState('All Floors');
   const [search, setSearch] = useState('');
   const [openFaq, setOpenFaq] = useState(0);
+
+  // VARSITY section reveals: fire once as each landing block scrolls into view.
+  useEffect(() => {
+    const teardown = initReveals(document);
+    return teardown;
+  }, []);
 
   // Live availability preview widget state (Section 5)
   const [previewFacilityId, setPreviewFacilityId] = useState('');
@@ -268,10 +274,10 @@ export function LandingPage() {
             }}
           />
           <figcaption className="landing-hero-caption">
-            <div style={{ fontWeight: 600, fontSize: '0.96rem' }}>
+            <div className="hero-caption-title">
               College of Informatics and Computing Sciences (CICS)
             </div>
-            <div style={{ fontSize: '0.82rem', color: 'rgba(238,242,255,0.86)', marginTop: '0.2rem' }}>
+            <div className="hero-caption-sub">
               5-Floor College Building · 1 Building · 5 Floors · 38 Facilities
             </div>
           </figcaption>
@@ -279,7 +285,13 @@ export function LandingPage() {
       </section>
 
       {/* 3. Campus Facilities */}
-      <section id="facilities" className="landing-section" aria-labelledby="discovery-heading">
+      <section
+        id="facilities"
+        className="landing-section"
+        aria-labelledby="discovery-heading"
+        data-reveal="theme"
+        data-reveal-index="0"
+      >
         <div className="section-header-row">
           <div>
             <span className="section-kicker">CICS Building Directory</span>
@@ -428,7 +440,13 @@ export function LandingPage() {
       </section>
 
       {/* 5. Facility Reservations (Interactive Availability Explorer + Photo Collage) */}
-      <section id="reservations" className="landing-section" aria-labelledby="reservations-demo-heading">
+      <section
+        id="reservations"
+        className="landing-section"
+        aria-labelledby="reservations-demo-heading"
+        data-reveal="theme"
+        data-reveal-index="1"
+      >
         <div className="reservation-demo-split">
           <div className="glass-panel" style={{ display: 'flex', flexDirection: 'column', gap: '1.1rem' }}>
             <div>
@@ -612,7 +630,13 @@ export function LandingPage() {
       </section>
 
       {/* 4. How It Works & Campus Roles */}
-      <section id="about" className="landing-section" aria-labelledby="roles-heading">
+      <section
+        id="about"
+        className="landing-section"
+        aria-labelledby="roles-heading"
+        data-reveal="theme"
+        data-reveal-index="2"
+      >
         <div className="section-header-row">
           <div>
             <span className="section-kicker">How It Works &amp; Access Roles</span>
@@ -663,7 +687,13 @@ export function LandingPage() {
       </section>
 
       {/* 6. Frequently Asked Questions */}
-      <section id="faq" className="landing-section" aria-labelledby="faq-heading">
+      <section
+        id="faq"
+        className="landing-section"
+        aria-labelledby="faq-heading"
+        data-reveal="theme"
+        data-reveal-index="3"
+      >
         <div className="section-header-row">
           <div>
             <span className="section-kicker">Questions &amp; Policy</span>
@@ -697,14 +727,12 @@ export function LandingPage() {
       {/* 7. Final Call to Action */}
       <section className="landing-section" aria-label="Get started">
         <div className="cta-glass-banner">
-          <div style={{ maxWidth: '58ch' }}>
-            <div className="meta-line" style={{ color: 'rgba(238,242,255,0.88)', marginBottom: '0.45rem' }}>
-              <span>Ready to coordinate campus spaces?</span>
-            </div>
-            <h2 style={{ fontSize: 'clamp(1.65rem, 2.8vw, 2.25rem)', color: '#ffffff' }}>
+          <div className="cta-copy-wrap">
+            <div className="cta-kicker">Ready to coordinate campus spaces?</div>
+            <h2 className="cta-heading">
               Ready to check or reserve a CICS Building space?
             </h2>
-            <p style={{ color: 'rgba(240,242,255,0.9)', marginTop: '0.55rem', fontSize: '0.98rem' }}>
+            <p className="cta-subcopy">
               Inspect room schedules immediately as a visitor, or sign in to submit reservations and maintenance reports.
             </p>
           </div>
@@ -718,27 +746,14 @@ export function LandingPage() {
               <span>View Class Timetable</span>
             </Link>
             {user ? (
-              <Link
-                to="/app/dashboard"
-                className="btn"
-                style={{
-                  background: 'rgba(20, 17, 46, 0.34)',
-                  color: '#ffffff',
-                  border: '1px solid rgba(255, 255, 255, 0.38)',
-                }}
-              >
+              <Link to="/app/dashboard" className="btn btn-cta-secondary">
                 Open Workspace
               </Link>
             ) : (
               <button
                 type="button"
-                className="btn"
+                className="btn btn-cta-secondary"
                 onClick={() => openSignInModal()}
-                style={{
-                  background: 'rgba(20, 17, 46, 0.34)',
-                  color: '#ffffff',
-                  border: '1px solid rgba(255, 255, 255, 0.38)',
-                }}
               >
                 Sign In
               </button>

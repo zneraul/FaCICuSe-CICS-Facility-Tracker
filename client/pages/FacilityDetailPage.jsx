@@ -7,11 +7,10 @@ import { FacilityImage } from '../components/FacilityImage.jsx';
 import { useAuth } from '../context/AuthContext.jsx';
 import { useAuthModal } from '../context/AuthModalContext.jsx';
 import { apiRequest } from '../services/api.js';
+import { addDays, getCampusTodayIsoDate } from '../utils/calendarUtils.js';
 
 function getDefaultDate() {
-  const d = new Date();
-  d.setDate(d.getDate() + 1);
-  return d.toISOString().slice(0, 10);
+  return addDays(getCampusTodayIsoDate(), 1);
 }
 
 function toMinutes(hhmm) {
