@@ -530,223 +530,26 @@ export function AdminAnalyticsPage() {
                 </div>
               </article>
 
-              <article className="analytics-kpi-card">
-                <div className="analytics-kpi-head">
-                  <span>Campus Accounts</span>
-                  <Users size={15} aria-hidden="true" />
-                </div>
-                <div className="analytics-kpi-val">{analytics.totals.users}</div>
-                <div className="analytics-kpi-foot">
-                  {analytics.usersByRole.student} student · {analytics.usersByRole.professor} faculty ·{' '}
-                  {analytics.usersByRole.admin} admin
-                </div>
-              </article>
 
-              <article className="analytics-kpi-card">
-                <div className="analytics-kpi-head">
-                  <span>Facilities with Approved Bookings</span>
-                  <CalendarClock size={15} aria-hidden="true" />
-                </div>
-                <div className="analytics-kpi-val">{analytics.totals.scheduledFacilities}</div>
-                <div className="analytics-kpi-foot">Facilities with confirmed or completed bookings in the selected records</div>
-              </article>
+
+
             </section>
 
-            {/* Facility-management intelligence: derived from recorded schedules and issue reports */}
-            <section className="analytics-grid-2" aria-label="Facility management insights">
-              <article className="analytics-card">
-                <div className="analytics-card-header">
-                  <div>
-                    <h2 className="analytics-card-title">Most Used Facilities</h2>
-                    <p className="analytics-card-sub">Spaces ranked by recorded reservation requests.</p>
-                  </div>
-                </div>
-                {(analytics.mostUsedFacilities || []).length === 0 ? (
-                  <div className="analytics-empty">No reservation activity is recorded for the matching facilities.</div>
-                ) : (
-                  <div className="analytics-meter-list">
-                    {analytics.mostUsedFacilities.map((item) => (
-                      <div key={item.facilityId} className="analytics-meter-item">
-                        <div className="analytics-meter-top">
-                          <span><strong>{item.name}</strong> <span className="meta-line">{item.code}</span></span>
-                          <span className="tabular">{item.totalRequests} requests</span>
-                        </div>
-                        <div className="analytics-meter-track">
-                          <div className="analytics-meter-fill-blue" style={{ width: `${Math.max(3, (item.totalRequests / Math.max(1, analytics.mostUsedFacilities[0].totalRequests)) * 100)}%` }} />
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
+            {/* Decision-focused facility comparison charts */}
+            <section className="analytics-bi-grid" aria-label="Facility performance comparisons">
+              <article className="analytics-card analytics-bi-chart-card">
+                <div className="analytics-card-header"><div><h2 className="analytics-card-title">Scheduled Utilization by Facility</h2><p className="analytics-card-sub">Confirmed scheduled hours as a share of estimated operating hours in the selected period</p></div><span className="analytics-chart-unit">Utilization %</span></div>
+                {highestUtilizationFacilities.length === 0 ? <div className="analytics-empty">No confirmed scheduled hours are available for utilization calculations.</div> : <div className="analytics-horizontal-chart" role="img" aria-label={highestUtilizationFacilities.map((item) => `${item.name}: ${item.utilizationPct}% utilization`).join('; ')}>
+                  {highestUtilizationFacilities.slice(0, 8).map((item) => <div className="analytics-horizontal-row" key={item.facilityId}><div className="analytics-horizontal-label"><strong>{item.name}</strong><span>{item.code}</span></div><div className="analytics-horizontal-track"><div className="analytics-horizontal-fill utilization" style={{width:`${Math.min(100,Math.max(0,item.utilizationPct))}%`}} /></div><strong className="analytics-horizontal-value tabular">{item.utilizationPct}%</strong></div>)}
+                </div>}
+                <p className="analytics-chart-note">Estimated from scheduled hours and listed operating hours; this is not live occupancy.</p>
               </article>
-
-              <article className="analytics-card">
-                <div className="analytics-card-header">
-                  <div>
-                    <h2 className="analytics-card-title">Facility Utilization</h2>
-                    <p className="analytics-card-sub">Estimated scheduled hours versus listed daily operating hours across the selected date range. Assumes the listed hours apply each day.</p>
-                  </div>
-                </div>
-                {highestUtilizationFacilities.length === 0 ? (
-                  <div className="analytics-empty">No confirmed scheduled hours are available for utilization calculations.</div>
-                ) : (
-                  <div className="analytics-meter-list">
-                    {highestUtilizationFacilities.map((item) => (
-                      <div key={item.facilityId} className="analytics-meter-item">
-                        <div className="analytics-meter-top">
-                          <span><strong>{item.name}</strong> <span className="meta-line">{item.code}</span></span>
-                          <span className="tabular">{item.utilizationPct}% · {item.scheduledHours}h</span>
-                        </div>
-                        <div className="analytics-meter-track">
-                          <div className="analytics-meter-fill-blue" style={{ width: `${Math.min(100, item.utilizationPct)}%` }} />
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </article>
-
-              <article className="analytics-card">
-                <div className="analytics-card-header">
-                  <div>
-                    <h2 className="analytics-card-title">Underutilized Facilities</h2>
-                    <p className="analytics-card-sub">Available, reservable spaces with the lowest recorded scheduled utilization.</p>
-                  </div>
-                </div>
-                {underutilizedFacilities.length === 0 ? (
-                  <div className="analytics-empty">No available reservable facilities match the current filters.</div>
-                ) : (
-                  <div className="analytics-meter-list">
-                    {underutilizedFacilities.map((item) => (
-                      <div key={item.facilityId} className="analytics-meter-item">
-                        <div className="analytics-meter-top">
-                          <span><strong>{item.name}</strong> <span className="meta-line">{item.code}</span></span>
-                          <span className="tabular">{item.utilizationPct}% · {item.totalRequests} requests</span>
-                        </div>
-                        <div className="analytics-meter-track">
-                          <div className="analytics-meter-fill-violet" style={{ width: `${Math.max(2, item.utilizationPct)}%` }} />
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </article>
-
-              <article className="analytics-card">
-                <div className="analytics-card-header">
-                  <div>
-                    <h2 className="analytics-card-title">Highest Booking Demand</h2>
-                    <p className="analytics-card-sub">Peak requested attendees compared with each facility's recorded capacity. This is not live occupancy.</p>
-                  </div>
-                </div>
-                {highestBookingDemandFacilities.length === 0 ? (
-                  <div className="analytics-empty">Capacity or attendee-count data is unavailable for the matching reservations.</div>
-                ) : (
-                  <div className="analytics-meter-list">
-                    {highestBookingDemandFacilities.map((item) => (
-                      <div key={item.facilityId} className="analytics-meter-item">
-                        <div className="analytics-meter-top">
-                          <span><strong>{item.name}</strong> <span className="meta-line">{item.code}</span></span>
-                          <span className="tabular">{item.peakAttendees}/{item.capacity} · {item.bookingDemandPct}%</span>
-                        </div>
-                        <div className="analytics-meter-track">
-                          <div className="analytics-meter-fill-blue" style={{ width: `${Math.min(100, item.bookingDemandPct)}%` }} />
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </article>
-
-              <article className="analytics-card">
-                <div className="analytics-card-header">
-                  <div>
-                    <h2 className="analytics-card-title">Facility Condition Overview</h2>
-                    <p className="analytics-card-sub">Current recorded status of facilities in the selected directory filters.</p>
-                  </div>
-                </div>
-                {Object.keys(analytics.facilityStatusCounts || {}).length === 0 ? (
-                  <div className="analytics-empty">No facility status records are available.</div>
-                ) : (
-                  <div className="analytics-meter-list">
-                    {Object.entries(analytics.facilityStatusCounts).map(([status, count]) => (
-                      <div key={status} className="analytics-meter-item">
-                        <div className="analytics-meter-top"><span>{status}</span><strong className="tabular">{count} facilities</strong></div>
-                        <div className="analytics-meter-track">
-                          <div className="analytics-meter-fill-blue" style={{ width: `${(count / Math.max(1, analytics.totals.facilities)) * 100}%` }} />
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </article>
-
-              <article className="analytics-card">
-                <div className="analytics-card-header">
-                  <div>
-                    <h2 className="analytics-card-title">Maintenance Resolution Performance</h2>
-                    <p className="analytics-card-sub">Share of recorded maintenance reports marked Resolved or Closed.</p>
-                  </div>
-                </div>
-                {analytics.maintenanceResolutionRatePct === null ? (
-                  <div className="analytics-empty">No maintenance reports are available to calculate a resolution rate.</div>
-                ) : (
-                  <>
-                    <div className="analytics-kpi-val">{analytics.maintenanceResolutionRatePct}%</div>
-                    <p className="analytics-card-sub">Resolved or closed: {analytics.issuesByStatus.Resolved + analytics.issuesByStatus.Closed} of {analytics.totals.issues} reports.</p>
-                  </>
-                )}
-              </article>
-
-              <article className="analytics-card">
-                <div className="analytics-card-header">
-                  <div>
-                    <h2 className="analytics-card-title">Maintenance Frequency Tracker</h2>
-                    <p className="analytics-card-sub">Reported maintenance issues by facility, ranked by recorded ticket count.</p>
-                  </div>
-                  <Wrench size={16} style={{ color: 'var(--accent-indigo)' }} aria-hidden="true" />
-                </div>
-                {maintenanceByFacility.length === 0 ? (
-                  <div className="analytics-empty">No maintenance reports are recorded for the matching facilities.</div>
-                ) : (
-                  <div className="analytics-meter-list">
-                    {maintenanceByFacility.map((item) => (
-                      <div key={item.facilityId} className="analytics-meter-item">
-                        <div className="analytics-meter-top">
-                          <span><strong>{item.name}</strong> <span className="meta-line">{item.code}</span></span>
-                          <span className="tabular">{item.issueCount} reports · {item.openIssueCount} open</span>
-                        </div>
-                        <div className="analytics-meter-track">
-                          <div className="analytics-meter-fill-violet" style={{ width: `${Math.max(6, (item.issueCount / Math.max(1, maintenanceByFacility[0].issueCount)) * 100)}%` }} />
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-                {maintenanceFrequencyByMonth.length > 0 && (
-                  <figure className="analytics-chart-figure" aria-label="Monthly maintenance report frequency">
-                    <div className="analytics-chart-caption" style={{ marginBottom: '0.5rem' }}>
-                      <strong>Monthly report trend</strong> · Number of reports
-                    </div>
-                    <div
-                      role="img"
-                      aria-label={maintenanceFrequencyByMonth.map((item) => `${item.month}: ${item.count} reports`).join(', ')}
-                      style={{ display: 'flex', alignItems: 'end', gap: '0.65rem', minHeight: '150px', padding: '0.75rem 0.25rem 0', overflowX: 'auto' }}
-                    >
-                      {maintenanceFrequencyByMonth.map((item) => {
-                        const maxCount = Math.max(1, ...maintenanceFrequencyByMonth.map((entry) => entry.count));
-                        const heightPct = Math.max(5, (item.count / maxCount) * 100);
-                        return (
-                          <div key={item.month} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'end', gap: '0.4rem', minWidth: '42px', flex: '1 0 42px', height: '132px' }}>
-                            <strong className="tabular" style={{ fontSize: '0.75rem' }}>{item.count}</strong>
-                            <div style={{ width: '100%', maxWidth: '34px', height: `${heightPct}%`, minHeight: '4px', borderRadius: '6px 6px 2px 2px', background: 'linear-gradient(180deg, #6366f1, #3b82f6)' }} />
-                            <span className="analytics-chart-caption">{item.month.slice(2)}</span>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </figure>
-                )}
+              <article className="analytics-card analytics-bi-chart-card">
+                <div className="analytics-card-header"><div><h2 className="analytics-card-title">Booking Demand vs. Capacity</h2><p className="analytics-card-sub">Peak requested attendees compared with each facility's recorded capacity</p></div><span className="analytics-chart-unit">Peak attendees %</span></div>
+                {highestBookingDemandFacilities.length === 0 ? <div className="analytics-empty">Capacity or attendee-count data is unavailable for the matching reservations.</div> : <div className="analytics-horizontal-chart" role="img" aria-label={highestBookingDemandFacilities.map((item) => `${item.name}: ${item.bookingDemandPct}% of capacity`).join('; ')}>
+                  {highestBookingDemandFacilities.slice(0, 8).map((item) => <div className="analytics-horizontal-row" key={item.facilityId}><div className="analytics-horizontal-label"><strong>{item.name}</strong><span>{item.peakAttendees} of {item.capacity} seats</span></div><div className="analytics-horizontal-track"><div className="analytics-horizontal-fill demand" style={{width:`${Math.min(100,Math.max(0,item.bookingDemandPct))}%`}} /></div><strong className="analytics-horizontal-value tabular">{item.bookingDemandPct}%</strong></div>)}
+                </div>}
+                <p className="analytics-chart-note">Recorded booking requests compared with capacity—not actual room occupancy.</p>
               </article>
             </section>
 
