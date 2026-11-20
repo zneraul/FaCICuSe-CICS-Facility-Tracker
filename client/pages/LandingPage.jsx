@@ -333,9 +333,6 @@ export function LandingPage() {
                 </option>
               ))}
             </select>
-            <Link to="/facilities" className="btn btn-glass btn-sm">
-              Full Directory
-            </Link>
           </div>
         </div>
 
