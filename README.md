@@ -1,5 +1,9 @@
 # FaCICuSe — CICS Facility Tracker
 
+[![Live Website](https://img.shields.io/badge/Live%20Website-Open%20FaCICuSe-2ea44f?style=for-the-badge)](https://facicuse-cics-facility-tracker-fg6s.onrender.com)
+
+**Live demo:** https://facicuse-cics-facility-tracker-fg6s.onrender.com
+
 FaCICuSe (Connected Insights, Coordinated Spaces) is a standalone facility discovery, reservation coordination, class scheduling, maintenance reporting, and administrative management system for the College of Informatics and Computing Sciences (CICS) Building at Batangas State University – Alangilan Campus.
 
 This repository is maintained independently from the original `FaCICuSe` repository. Its source code and deployment are managed here; the original repository and Render service are retained separately.
@@ -51,6 +55,8 @@ The GitHub Actions workflow runs the automated tests, Firebase Auth emulator int
 ## Deployment
 
 The standalone application is hosted on Render. The Render service is configured independently in the Render dashboard; this repository intentionally does not include legacy Vercel routing or an outdated Render Blueprint.
+
+**Production website:** [Open FaCICuSe](https://facicuse-cics-facility-tracker-fg6s.onrender.com)
 
 Configure these variables in the standalone Render service:
 
