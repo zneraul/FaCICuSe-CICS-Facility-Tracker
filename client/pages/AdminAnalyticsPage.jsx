@@ -267,6 +267,11 @@ export function AdminAnalyticsPage() {
     () => facilitySorted.find((f) => f.facilityId === selectedFacilityId) || null,
     [facilitySorted, selectedFacilityId]
   );
+  const highestUtilizationFacilities = analytics?.highestUtilizationFacilities || [];
+  const underutilizedFacilities = analytics?.underutilizedFacilities || [];
+  const highestBookingDemandFacilities = analytics?.highestBookingDemandFacilities || [];
+  const maintenanceByFacility = analytics?.maintenanceByFacility || [];
+  const maintenanceFrequencyByMonth = analytics?.maintenanceFrequencyByMonth || [];
 
   const maxFacilityRequests = Math.max(1, ...facilitySorted.map((f) => f.totalRequests));
   const maxPeakRequests = Math.max(
@@ -535,6 +540,119 @@ export function AdminAnalyticsPage() {
                   {analytics.usersByRole.student} student · {analytics.usersByRole.professor} faculty ·{' '}
                   {analytics.usersByRole.admin} admin
                 </div>
+              </article>
+            </section>
+
+            {/* Facility-management intelligence: derived from recorded schedules and issue reports */}
+            <section className="analytics-grid-2" aria-label="Facility management insights">
+              <article className="analytics-card">
+                <div className="analytics-card-header">
+                  <div>
+                    <h2 className="analytics-card-title">Facility Utilization</h2>
+                    <p className="analytics-card-sub">Confirmed scheduled hours compared with operating hours on dates with confirmed bookings.</p>
+                  </div>
+                </div>
+                {highestUtilizationFacilities.length === 0 ? (
+                  <div className="analytics-empty">No confirmed scheduled hours are available for utilization calculations.</div>
+                ) : (
+                  <div className="analytics-meter-list">
+                    {highestUtilizationFacilities.map((item) => (
+                      <div key={item.facilityId} className="analytics-meter-item">
+                        <div className="analytics-meter-top">
+                          <span><strong>{item.name}</strong> <span className="meta-line">{item.code}</span></span>
+                          <span className="tabular">{item.utilizationPct}% · {item.scheduledHours}h</span>
+                        </div>
+                        <div className="analytics-meter-track">
+                          <div className="analytics-meter-fill-blue" style={{ width: `${Math.min(100, item.utilizationPct)}%` }} />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </article>
+
+              <article className="analytics-card">
+                <div className="analytics-card-header">
+                  <div>
+                    <h2 className="analytics-card-title">Underutilized Facilities</h2>
+                    <p className="analytics-card-sub">Available, reservable spaces with the lowest recorded scheduled utilization.</p>
+                  </div>
+                </div>
+                {underutilizedFacilities.length === 0 ? (
+                  <div className="analytics-empty">No available reservable facilities match the current filters.</div>
+                ) : (
+                  <div className="analytics-meter-list">
+                    {underutilizedFacilities.map((item) => (
+                      <div key={item.facilityId} className="analytics-meter-item">
+                        <div className="analytics-meter-top">
+                          <span><strong>{item.name}</strong> <span className="meta-line">{item.code}</span></span>
+                          <span className="tabular">{item.utilizationPct}% · {item.totalRequests} requests</span>
+                        </div>
+                        <div className="analytics-meter-track">
+                          <div className="analytics-meter-fill-violet" style={{ width: `${Math.max(2, item.utilizationPct)}%` }} />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </article>
+
+              <article className="analytics-card">
+                <div className="analytics-card-header">
+                  <div>
+                    <h2 className="analytics-card-title">Highest Booking Demand</h2>
+                    <p className="analytics-card-sub">Peak requested attendees compared with each facility's recorded capacity. This is not live occupancy.</p>
+                  </div>
+                </div>
+                {highestBookingDemandFacilities.length === 0 ? (
+                  <div className="analytics-empty">Capacity or attendee-count data is unavailable for the matching reservations.</div>
+                ) : (
+                  <div className="analytics-meter-list">
+                    {highestBookingDemandFacilities.map((item) => (
+                      <div key={item.facilityId} className="analytics-meter-item">
+                        <div className="analytics-meter-top">
+                          <span><strong>{item.name}</strong> <span className="meta-line">{item.code}</span></span>
+                          <span className="tabular">{item.peakAttendees}/{item.capacity} · {item.bookingDemandPct}%</span>
+                        </div>
+                        <div className="analytics-meter-track">
+                          <div className="analytics-meter-fill-blue" style={{ width: `${Math.min(100, item.bookingDemandPct)}%` }} />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </article>
+
+              <article className="analytics-card">
+                <div className="analytics-card-header">
+                  <div>
+                    <h2 className="analytics-card-title">Maintenance Frequency Tracker</h2>
+                    <p className="analytics-card-sub">Reported maintenance issues by facility, ranked by recorded ticket count.</p>
+                  </div>
+                  <Wrench size={16} style={{ color: 'var(--accent-indigo)' }} aria-hidden="true" />
+                </div>
+                {maintenanceByFacility.length === 0 ? (
+                  <div className="analytics-empty">No maintenance reports are recorded for the matching facilities.</div>
+                ) : (
+                  <div className="analytics-meter-list">
+                    {maintenanceByFacility.map((item) => (
+                      <div key={item.facilityId} className="analytics-meter-item">
+                        <div className="analytics-meter-top">
+                          <span><strong>{item.name}</strong> <span className="meta-line">{item.code}</span></span>
+                          <span className="tabular">{item.issueCount} reports · {item.openIssueCount} open</span>
+                        </div>
+                        <div className="analytics-meter-track">
+                          <div className="analytics-meter-fill-violet" style={{ width: `${Math.max(6, (item.issueCount / Math.max(1, maintenanceByFacility[0].issueCount)) * 100)}%` }} />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                {maintenanceFrequencyByMonth.length > 0 && (
+                  <div className="analytics-chart-caption">
+                    Monthly reports: {maintenanceFrequencyByMonth.map((item) => `${item.month}: ${item.count}`).join(' · ')}
+                  </div>
+                )}
               </article>
             </section>
 
