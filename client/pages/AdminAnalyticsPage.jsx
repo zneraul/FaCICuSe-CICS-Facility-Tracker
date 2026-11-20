@@ -541,10 +541,45 @@ export function AdminAnalyticsPage() {
                   {analytics.usersByRole.admin} admin
                 </div>
               </article>
+
+              <article className="analytics-kpi-card">
+                <div className="analytics-kpi-head">
+                  <span>Rooms Scheduled</span>
+                  <CalendarClock size={15} aria-hidden="true" />
+                </div>
+                <div className="analytics-kpi-val">{analytics.totals.scheduledFacilities}</div>
+                <div className="analytics-kpi-foot">Facilities with confirmed or completed reservations in the selected records</div>
+              </article>
             </section>
 
             {/* Facility-management intelligence: derived from recorded schedules and issue reports */}
             <section className="analytics-grid-2" aria-label="Facility management insights">
+              <article className="analytics-card">
+                <div className="analytics-card-header">
+                  <div>
+                    <h2 className="analytics-card-title">Most Used Facilities</h2>
+                    <p className="analytics-card-sub">Spaces ranked by recorded reservation requests.</p>
+                  </div>
+                </div>
+                {(analytics.mostUsedFacilities || []).length === 0 ? (
+                  <div className="analytics-empty">No reservation activity is recorded for the matching facilities.</div>
+                ) : (
+                  <div className="analytics-meter-list">
+                    {analytics.mostUsedFacilities.map((item) => (
+                      <div key={item.facilityId} className="analytics-meter-item">
+                        <div className="analytics-meter-top">
+                          <span><strong>{item.name}</strong> <span className="meta-line">{item.code}</span></span>
+                          <span className="tabular">{item.totalRequests} requests</span>
+                        </div>
+                        <div className="analytics-meter-track">
+                          <div className="analytics-meter-fill-blue" style={{ width: `${Math.max(3, (item.totalRequests / Math.max(1, analytics.mostUsedFacilities[0].totalRequests)) * 100)}%` }} />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </article>
+
               <article className="analytics-card">
                 <div className="analytics-card-header">
                   <div>
