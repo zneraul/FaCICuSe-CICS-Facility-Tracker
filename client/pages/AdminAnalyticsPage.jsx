@@ -584,7 +584,7 @@ export function AdminAnalyticsPage() {
                 <div className="analytics-card-header">
                   <div>
                     <h2 className="analytics-card-title">Facility Utilization</h2>
-                    <p className="analytics-card-sub">Confirmed scheduled hours compared with operating hours on dates with confirmed bookings.</p>
+                    <p className="analytics-card-sub">Estimated scheduled hours versus listed daily operating hours across the selected date range. Assumes the listed hours apply each day.</p>
                   </div>
                 </div>
                 {highestUtilizationFacilities.length === 0 ? (
@@ -724,9 +724,28 @@ export function AdminAnalyticsPage() {
                   </div>
                 )}
                 {maintenanceFrequencyByMonth.length > 0 && (
-                  <div className="analytics-chart-caption">
-                    Monthly reports: {maintenanceFrequencyByMonth.map((item) => `${item.month}: ${item.count}`).join(' · ')}
-                  </div>
+                  <figure className="analytics-chart-figure" aria-label="Monthly maintenance report frequency">
+                    <div className="analytics-chart-caption" style={{ marginBottom: '0.5rem' }}>
+                      <strong>Monthly report trend</strong> · Number of reports
+                    </div>
+                    <div
+                      role="img"
+                      aria-label={maintenanceFrequencyByMonth.map((item) => `${item.month}: ${item.count} reports`).join(', ')}
+                      style={{ display: 'flex', alignItems: 'end', gap: '0.65rem', minHeight: '150px', padding: '0.75rem 0.25rem 0', overflowX: 'auto' }}
+                    >
+                      {maintenanceFrequencyByMonth.map((item) => {
+                        const maxCount = Math.max(1, ...maintenanceFrequencyByMonth.map((entry) => entry.count));
+                        const heightPct = Math.max(5, (item.count / maxCount) * 100);
+                        return (
+                          <div key={item.month} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'end', gap: '0.4rem', minWidth: '42px', flex: '1 0 42px', height: '132px' }}>
+                            <strong className="tabular" style={{ fontSize: '0.75rem' }}>{item.count}</strong>
+                            <div style={{ width: '100%', maxWidth: '34px', height: `${heightPct}%`, minHeight: '4px', borderRadius: '6px 6px 2px 2px', background: 'linear-gradient(180deg, #6366f1, #3b82f6)' }} />
+                            <span className="analytics-chart-caption">{item.month.slice(2)}</span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </figure>
                 )}
               </article>
             </section>
