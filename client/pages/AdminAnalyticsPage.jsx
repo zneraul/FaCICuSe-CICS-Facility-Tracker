@@ -544,11 +544,11 @@ export function AdminAnalyticsPage() {
 
               <article className="analytics-kpi-card">
                 <div className="analytics-kpi-head">
-                  <span>Rooms Scheduled</span>
+                  <span>Rooms with Confirmed Bookings</span>
                   <CalendarClock size={15} aria-hidden="true" />
                 </div>
                 <div className="analytics-kpi-val">{analytics.totals.scheduledFacilities}</div>
-                <div className="analytics-kpi-foot">Facilities with confirmed or completed reservations in the selected records</div>
+                <div className="analytics-kpi-foot">Facilities with confirmed reservations in the selected records</div>
               </article>
             </section>
 
