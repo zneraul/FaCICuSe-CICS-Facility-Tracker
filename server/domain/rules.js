@@ -530,6 +530,18 @@ export function computeAdminAnalytics({
     issuesByCategory[issue.category] = (issuesByCategory[issue.category] || 0) + 1;
   }
 
+  const reservationDates = safeReservations
+    .map((reservation) => reservation.reservationDate)
+    .filter((date) => /^\\d{4}-\\d{2}-\\d{2}$/.test(String(date || '')))
+    .sort();
+  const periodStart = startDateFilter || reservationDates[0] || '';
+  const periodEnd = endDateFilter || reservationDates[reservationDates.length - 1] || '';
+  const periodStartMs = periodStart ? Date.parse(`${periodStart}T00:00:00Z`) : NaN;
+  const periodEndMs = periodEnd ? Date.parse(`${periodEnd}T00:00:00Z`) : NaN;
+  const analyticsPeriodDays = Number.isFinite(periodStartMs) && Number.isFinite(periodEndMs) && periodEndMs >= periodStartMs
+    ? Math.floor((periodEndMs - periodStartMs) / 86400000) + 1
+    : 0;
+
   const facilityBreakdown = safeFacilities.map((facility) => {
     const facilityReservations = safeReservations.filter((r) => r.facilityId === facility.id);
     const confirmedCount = facilityReservations.filter(
@@ -575,7 +587,7 @@ export function computeAdminAnalytics({
     } catch {
       operatingHoursPerDay = 0;
     }
-    const utilizationDenominator = operatingHoursPerDay * scheduledDates.size;
+    const utilizationDenominator = operatingHoursPerDay * analyticsPeriodDays;
     const utilizationPct = utilizationDenominator > 0
       ? Number(Math.min(100, (scheduledHours / utilizationDenominator) * 100).toFixed(1))
       : 0;
