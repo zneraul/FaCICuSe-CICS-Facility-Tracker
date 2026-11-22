@@ -2,7 +2,6 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { SESSION_COOKIE_NAME } from '../middleware/authMiddleware.js';
-import { ensureFacilityCatalog } from '../database/facilityCatalogService.js';
 import { getPublicProjectInfo } from '../domain/projectInfo.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -77,7 +76,6 @@ export function createHttpControllers({
     },
 
     async loginWithEmail(req, res) {
-      await ensureFacilityCatalog();
       const user = await userUseCases.authenticateWithEmailPassword(req.body || {});
       const isHttps = isHttpsRequest(req);
       const token = authProvider.issueSessionToken(user.uid, 'user');
@@ -146,13 +144,11 @@ export function createHttpControllers({
     },
 
     async listPublicFacilities(req, res) {
-      await ensureFacilityCatalog();
       const items = await facilityUseCases.listPublicFacilities(req.query);
       res.json({ facilities: items });
     },
 
     async getPublicFacilityDetail(req, res) {
-      await ensureFacilityCatalog();
       const detail = await facilityUseCases.getPublicFacilityDetail(
         req.params.id,
         req.query.date
@@ -161,31 +157,26 @@ export function createHttpControllers({
     },
 
     async listPublicClassSchedules(req, res) {
-      await ensureFacilityCatalog();
       const data = await classScheduleUseCases.listPublicClassSchedules(req.query || {});
       res.json(data);
     },
 
     async getPublicTodaysClassSchedules(req, res) {
-      await ensureFacilityCatalog();
       const data = await classScheduleUseCases.getTodaysClassSchedules(req.query?.date);
       res.json(data);
     },
 
     async listClassSchedules(req, res) {
-      await ensureFacilityCatalog();
       const data = await classScheduleUseCases.listPublicClassSchedules(req.query || {});
       res.json(data);
     },
 
     async getTodaysClassSchedules(req, res) {
-      await ensureFacilityCatalog();
       const data = await classScheduleUseCases.getTodaysClassSchedules(req.query?.date);
       res.json(data);
     },
 
     async getDashboard(req, res) {
-      await ensureFacilityCatalog();
       const data = await dashboardUseCases.getRoleDashboard(req.actor);
       res.json(data);
     },
@@ -204,13 +195,11 @@ export function createHttpControllers({
     },
 
     async listFacilities(req, res) {
-      await ensureFacilityCatalog();
       const items = await facilityUseCases.listFacilitiesForUser(req.actor, req.query);
       res.json({ facilities: items });
     },
 
     async getFacilityDetail(req, res) {
-      await ensureFacilityCatalog();
       const detail = await facilityUseCases.getFacilityDetailForUser(
         req.actor,
         req.params.id,
@@ -220,7 +209,6 @@ export function createHttpControllers({
     },
 
     async listMyReservations(req, res) {
-      await ensureFacilityCatalog();
       const items = await reservationUseCases.listUserReservations(
         req.actor,
         req.query.status
@@ -229,7 +217,6 @@ export function createHttpControllers({
     },
 
     async getCalendarSchedule(req, res) {
-      await ensureFacilityCatalog();
       const calendar = await reservationUseCases.getCalendarSchedule(req.actor, req.query || {});
       res.json(calendar);
     },
@@ -251,7 +238,6 @@ export function createHttpControllers({
     },
 
     async listIssues(req, res) {
-      await ensureFacilityCatalog();
       const items = await maintenanceUseCases.listMaintenanceIssues(
         req.actor,
         req.query.status
@@ -288,7 +274,6 @@ export function createHttpControllers({
     },
 
     async adminListReservations(req, res) {
-      await ensureFacilityCatalog();
       const items = await reservationUseCases.listAllReservationsForAdmin(
         req.actor,
         req.query.status
@@ -323,7 +308,6 @@ export function createHttpControllers({
     },
 
     async adminListClassSchedules(req, res) {
-      await ensureFacilityCatalog();
       const data = await classScheduleUseCases.listAdminClassSchedules(
         req.actor,
         req.query || {}
@@ -332,7 +316,6 @@ export function createHttpControllers({
     },
 
     async adminCreateClassSchedule(req, res) {
-      await ensureFacilityCatalog();
       const created = await classScheduleUseCases.createClassSchedule(
         req.actor,
         req.body || {}
@@ -341,7 +324,6 @@ export function createHttpControllers({
     },
 
     async adminUpdateClassSchedule(req, res) {
-      await ensureFacilityCatalog();
       const updated = await classScheduleUseCases.updateClassSchedule(
         req.actor,
         req.params.id,
@@ -351,7 +333,6 @@ export function createHttpControllers({
     },
 
     async adminVerifyClassSchedule(req, res) {
-      await ensureFacilityCatalog();
       const updated = await classScheduleUseCases.verifyClassSchedule(
         req.actor,
         req.params.id,
@@ -361,7 +342,6 @@ export function createHttpControllers({
     },
 
     async adminDeleteClassSchedule(req, res) {
-      await ensureFacilityCatalog();
       const result = await classScheduleUseCases.deleteClassSchedule(
         req.actor,
         req.params.id
@@ -379,7 +359,6 @@ export function createHttpControllers({
     },
 
     async adminListUsers(req, res) {
-      await ensureFacilityCatalog();
       const items = await userUseCases.listUsersForAdmin(req.actor);
       res.json({ users: items });
     },
@@ -394,13 +373,11 @@ export function createHttpControllers({
     },
 
     async adminGetAnalytics(req, res) {
-      await ensureFacilityCatalog();
       const analytics = await analyticsUseCases.getAdminAnalytics(req.actor, req.query || {});
       res.json(analytics);
     },
 
     async adminExportCsv(req, res) {
-      await ensureFacilityCatalog();
       const csv = await analyticsUseCases.exportReservationsCsv(req.actor);
       res.setHeader('Content-Type', 'text/csv; charset=utf-8');
       res.setHeader(
