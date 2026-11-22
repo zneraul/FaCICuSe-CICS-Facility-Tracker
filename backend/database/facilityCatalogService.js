@@ -11,7 +11,7 @@ import {
   ClassScheduleVerificationStatus,
   INITIAL_IT3106_CLASS_SCHEDULES,
   resolveCanonicalFacilityForSeed,
-} from '../../domain/classSchedule.js';
+} from '../domain/classSchedule.js';
 import { isPostgresConfigured } from '../config/runtimeConfig.js';
 
 let catalogSyncPromise = null;
