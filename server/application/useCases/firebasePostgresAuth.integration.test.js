@@ -6,8 +6,8 @@ process.env.FIREBASE_AUTH_EMULATOR_HOST ||= '127.0.0.1:9099';
 process.env.DATABASE_URL ||= 'postgres://postgres:postgres@127.0.0.1:5432/facicuse_test';
 process.env.SQL_SSL = 'false';
 
-const { pool } = await import('../../../src/db/index.ts');
-const { createPostgresAdapters } = await import('../../adapters/outbound/postgresRepositories.js');
+const { pool } = await import('../../adapters/outbound/postgres/index.ts');
+const { createPostgresAdapters } = await import('../../adapters/outbound/postgres/repositories.js');
 const { createAuthProviderAdapter } = await import('../../adapters/outbound/firebaseAuthAdapter.js');
 const { getAuth } = await import('firebase-admin/auth');
 const { createAuthMiddleware, SESSION_COOKIE_NAME } = await import('../../adapters/inbound/authMiddleware.js');
