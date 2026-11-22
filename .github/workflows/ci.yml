@@ -43,7 +43,7 @@ jobs:
       - name: Set up Bun
         uses: oven-sh/setup-bun@v2
         with:
-          bun-version: latest
+          bun-version: 1.4.5
       - name: Set up Java for Firebase Auth Emulator
         uses: actions/setup-java@v4
         with:
