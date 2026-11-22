@@ -27,7 +27,7 @@ No schema migration, facility catalog synchronization, or destructive database a
 | HTTP/API adapter | `server/adapters/inbound/` | Express routes, request parsing, authentication, authorization, response/error handling |
 | Application core | `server/application/` | Facility, reservation, schedule, maintenance, user, dashboard, and analytics use cases |
 | Domain core | `server/domain/` | Business rules, domain objects, validations, facility catalog |
-| PostgreSQL adapter | `server/adapters/outbound/postgres/` and `server/adapters/outbound/postgresRepositories.js` | Drizzle connection/schema and repository implementations |
+| PostgreSQL adapter | `server/adapters/outbound/postgres/` and `server/adapters/outbound/postgres/repositories.js` | Drizzle connection/schema and repository implementations |
 | Other outbound adapters | `server/adapters/outbound/` | Local development store, Firebase Auth, password hashing, catalog setup |
 | Composition/configuration | `server/infrastructure/` | Runtime validation and dependency wiring |
 | Database change set | `drizzle/` and `drizzle.config.ts` | Versioned SQL migrations and Drizzle Kit schema configuration |
