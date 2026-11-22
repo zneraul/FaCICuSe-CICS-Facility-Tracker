@@ -20,6 +20,9 @@ This guide helps identify which file is responsible for each part of the website
 | Local JSON development storage | `backend/database/localJsonRepositories.js` |
 | Environment variables | `backend/config/runtimeConfig.js` |
 | Connecting all backend parts | `backend/bootstrap/applicationContainer.js` |
+| Port contracts and adapter validation | `backend/application/ports.js`, `backend/bootstrap/applicationContainer.js` |
+| Architecture boundary tests | `backend/architecture/hexagonalArchitecture.test.js` |
+| Database startup and catalog initialization | `backend/index.js`, `backend/database/facilityCatalogService.js` |
 
 ## Website feature map
 
@@ -45,7 +48,7 @@ For example, when a user submits a reservation:
 2. The frontend sends an API request using `frontend/services/api.js`.
 3. `backend/routes/apiRoutes.js` matches the request URL.
 4. `backend/middleware/authMiddleware.js` checks the session and user role.
-5. `backend/controllers/apiControllers.js` receives the request and calls the reservation use case.
+5. `backend/controllers/apiControllers.js` receives the request and calls the reservation use case through the injected application service.
 6. `backend/application/useCases/reservationUseCases.js` applies the workflow.
 7. Domain rules in `backend/domain/` validate the reservation request.
 8. The repository in `backend/database/postgres/repositories.js` saves the record to PostgreSQL.
@@ -64,7 +67,7 @@ For example, when a user submits a reservation:
 - **config** — Environment and application settings.
 - **bootstrap** — The file that connects the backend parts during startup.
 
-The Ports and Adapters design remains in place: the application core depends on contracts in `backend/application/ports.js`, while database and external-service implementations are supplied from the outside.
+The Ports and Adapters design is enforced at the composition boundary: the application core depends on method contracts in `backend/application/ports.js`, while PostgreSQL, local JSON, and Firebase implementations are created and injected by `backend/bootstrap/applicationContainer.js`. The bootstrap validates required adapter methods before exposing the API router. `backend/index.js` verifies the database and performs the idempotent facility-catalog initialization once during startup; HTTP controllers do not initialize or import database infrastructure. Automated boundary checks live in `backend/architecture/hexagonalArchitecture.test.js`.
 
 ## Common commands
 
