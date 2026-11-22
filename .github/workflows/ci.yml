@@ -42,8 +42,8 @@ jobs:
           cache: npm
       - name: Set up Bun
         uses: oven-sh/setup-bun@v2
-          with:
-            bun-version: latest
+        with:
+          bun-version: latest
       - name: Set up Java for Firebase Auth Emulator
         uses: actions/setup-java@v4
         with:
