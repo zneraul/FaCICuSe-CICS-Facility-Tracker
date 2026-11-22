@@ -134,7 +134,7 @@ function buildInitialState() {
   return state;
 }
 
-export function createLocalJsonAdapters({ storeFilePath = DEFAULT_STORE_FILE } = {}) {
+export function createLocalStoreAdapters({ storeFilePath = DEFAULT_STORE_FILE } = {}) {
   let state = loadState();
 
   function loadState() {

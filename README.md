@@ -32,7 +32,7 @@ The top-level folders use familiar frontend/backend names. Each folder is arrang
   - `application/useCases/` — Reservation, facility, timetable, maintenance, user, dashboard, and analytics workflows.
   - `application/ports.js` — Contracts used by the application core.
   - `database/postgres/` — PostgreSQL connection, Drizzle schema, and database repositories.
-  - `database/localJsonRepositories.js` — Local JSON repository for non-production development.
+  - `database/localStoreRepositories.js` — Local JSON repository for non-production development.
   - `database/facilityCatalogService.js` — Existing facility catalogue and initial schedule synchronization.
   - `services/firebaseAuthService.js` — Firebase Admin authentication integration.
   - `utils/passwordHasher.js` — Password hashing and verification helpers.

@@ -17,7 +17,7 @@ import { createUserUseCases } from '../application/useCases/userUseCases.js';
 import { createDashboardUseCases } from '../application/useCases/dashboardUseCases.js';
 import { createAnalyticsUseCases } from '../application/useCases/analyticsUseCases.js';
 import { createPostgresAdapters } from '../database/postgres/repositories.js';
-import { createLocalJsonAdapters } from '../database/localJsonRepositories.js';
+import { createLocalStoreAdapters } from '../database/localStoreRepositories.js';
 import { createAuthProviderAdapter } from '../services/firebaseAuthService.js';
 import * as passwordHasher from '../utils/passwordHasher.js';
 import { createAuthMiddleware } from '../middleware/authMiddleware.js';
@@ -29,7 +29,7 @@ export function buildApplicationContainer(config) {
   const adapters =
     config.storageMode === 'postgres'
       ? createPostgresAdapters()
-      : createLocalJsonAdapters();
+      : createLocalStoreAdapters();
 
   const {
     facilityRepo,

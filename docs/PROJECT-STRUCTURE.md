@@ -15,7 +15,8 @@ This guide helps identify which file is responsible for each part of the website
 | Login/session and permissions | `backend/middleware/authMiddleware.js` |
 | Core business rules | `backend/domain/` |
 | Main feature workflows | `backend/application/useCases/` |
-| Database connection and tables | `backend/database/postgres/` |
+| PostgreSQL connection and tables | `backend/database/postgres/` |
+| Local JSON development storage | `backend/database/localJsonRepositories.js` |
 | Environment variables | `backend/config/runtimeConfig.js` |
 | Connecting all backend parts | `backend/bootstrap/applicationContainer.js` |
 
