@@ -58,6 +58,8 @@ jobs:
         run: npm ci
       - name: Run domain, authentication, architecture, and Firestore rules regression tests
         run: npm test
+      - name: Run Firestore rules authorization tests against Firestore Emulator
+        run: npx --yes firebase-tools@14.22.0 emulators:exec --project demo-facicuse-firestore-rules --only firestore --config firebase.test.json "npm run test:firestore-emulator"
       - name: Run Firebase Admin integration tests against Auth Emulator
         run: npx --yes firebase-tools@14.22.0 emulators:exec --project big-anvil-0lvvl --only auth --config firebase.test.json "node --test backend/application/useCases/firebaseAuthService.integration.test.js"
       - name: Run PostgreSQL adapter integration tests
