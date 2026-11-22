@@ -33,7 +33,7 @@ if (databaseUrl) {
 }
 
 export default defineConfig({
-  schema: './server/adapters/outbound/postgres/schema.ts',
+  schema: './backend/database/postgres/schema.ts',
   out: './drizzle',
   dialect: 'postgresql',
   schemaFilter: ['public'],

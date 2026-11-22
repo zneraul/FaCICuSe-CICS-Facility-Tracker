@@ -2,116 +2,111 @@
 
 ## 1. System overview
 
-FaCICuSe coordinates CICS facility discovery, availability review, reservations, class schedules, maintenance reporting, and administrator operations. The application is served by Node.js/Express, uses a web frontend, and persists operational data through PostgreSQL in production.
+FaCICuSe has a browser frontend, a Node.js/Express backend, an application core, database repositories, Firebase authentication integration, and a PostgreSQL database.
 
-## 2. Architecture style
+The source folders are named by responsibility so the code can be located quickly:
 
-The backend uses **Hexagonal Architecture (Ports and Adapters)**:
+- `frontend/` — Website pages, reusable interface components, browser services, styles, and public assets.
+- `backend/` — Express API, business rules, workflows, authentication, and database access.
+- `drizzle/` — Versioned database migrations.
+- `docs/` — Project and technical documentation.
 
-- **Domain core — `server/domain/`:** entities, value objects, business rules, facility and schedule policies, and domain errors. This layer owns rules such as reservation conflict validation and canonical facility resolution.
-- **Application core — `server/application/`:** use cases that orchestrate workflows without binding business policy to Express or a particular database. Port contracts are declared in `server/application/ports.js`.
-- **Inbound adapters — `server/adapters/inbound/`:** Express routes, HTTP controllers, authentication middleware, role checks, request limiting, and error serialization.
-- **Outbound adapters — `server/adapters/outbound/`:** repository implementations, Firebase Auth integration, password hashing, and persistence-specific code.
-- **Infrastructure — `server/infrastructure/`:** environment configuration and the composition root that wires ports, adapters, use cases, and controllers.
+## 2. Backend design
 
-The composition root in `server/infrastructure/container.js` constructs the adapters, validates their required port methods, creates use cases, and exposes the API router.
+The backend retains **Hexagonal Architecture (Ports and Adapters)**. Renaming the folders to familiar project terms does not remove the separation between business logic and technology-specific code.
 
-## 3. Backend request/data flow
+| Layer | Folder | Responsibility |
+|---|---|---|
+| Domain | `backend/domain/` | Core entities, value objects, validation, facility policies, and business rules |
+| Application | `backend/application/` | Use cases and port contracts that coordinate business workflows |
+| HTTP routes | `backend/routes/` | Express API paths and route-to-controller mapping |
+| Controllers | `backend/controllers/` | Convert HTTP requests into use-case calls and format responses |
+| Middleware | `backend/middleware/` | Authentication, role checks, request limiting, and error handling |
+| Database | `backend/database/` | PostgreSQL and local repository implementations |
+| Services | `backend/services/` | Firebase Admin authentication integration |
+| Utilities | `backend/utils/` | Password hashing and verification |
+| Configuration | `backend/config/` | Environment-variable validation and runtime settings |
+| Bootstrap | `backend/bootstrap/` | Composition root that connects ports, adapters, use cases, and HTTP handlers |
+
+Port contracts are defined in `backend/application/ports.js`. The PostgreSQL and local repository implementations satisfy the data ports; the Firebase service provides the external identity integration. The composition root in `backend/bootstrap/applicationContainer.js` wires these dependencies together.
+
+## 3. Request and data flow
 
 ```mermaid
 flowchart TD
-  UI[Browser UI] --> HTTP[Express REST routes]
-  HTTP --> AUTH[Authentication and role middleware]
-  AUTH --> CTRL[HTTP controllers]
-  CTRL --> UC[Application use cases]
-  UC --> DOMAIN[Domain entities and rules]
-  UC --> PORTS[Repository / service ports]
-  PORTS --> PG[PostgreSQL outbound adapter]
-  PORTS --> LOCAL[Local JSON adapter for development]
-  PG --> DB[(PostgreSQL)]
-  LOCAL --> JSON[(Local runtime JSON store)]
+  BROWSER[Browser / Frontend] --> API[Express API Route]
+  API --> AUTH[Authentication and Role Middleware]
+  AUTH --> CTRL[Controller]
+  CTRL --> UC[Application Use Case]
+  UC --> DOMAIN[Domain Rules]
+  UC --> PORT[Repository / Service Port]
+  PORT --> PG[PostgreSQL Repository]
+  PORT --> LOCAL[Local Development Repository]
+  PG --> DB[(PostgreSQL Database)]
+  LOCAL --> JSON[(Local JSON Store)]
   UC --> CTRL
-  CTRL --> HTTP
-  HTTP --> UI
+  CTRL --> API
+  API --> BROWSER
 ```
 
-For production, the runtime configuration requires a configured PostgreSQL connection and does not permit falling back to the local JSON store. The local store is intended for non-production development.
+Production uses PostgreSQL. The local JSON repository is for non-production development only. Production startup does not allow an unconfigured local-storage fallback.
 
-## 4. Frontend and API boundary
+## 4. Frontend and backend connection
 
-- `client/` contains the authenticated React/Vite workspace, reusable components, page views, contexts, API/Firebase client services, and utility modules.
-- `client/public/index.html` is the separate public landing page source. Its stylesheets and vanilla JavaScript interactions live under `client/public/assets/css/` and `client/public/assets/js/`.
-- The frontend communicates with Express through the `/api` routes; frontend route visibility is not the authorization boundary.
-- The production Express server serves the standalone landing page at `/`, generated client assets, and the authenticated SPA for application routes.
+- `frontend/main.jsx` starts the React application.
+- `frontend/App.jsx` defines the application page routes.
+- Frontend pages call the API using `frontend/services/api.js`.
+- The backend mounts the API at `/api`.
+- The public landing page source is `frontend/public/index.html`; its CSS and vanilla JavaScript are in `frontend/public/assets/css/` and `frontend/public/assets/js/`.
+- The Express application serves the public landing page at `/` and the authenticated application on its app routes.
 
-The current frontend is intentionally preserved during this organization pass. The authenticated workspace remains React/Vite; this change does not claim to have migrated the entire application to a Vanilla-JavaScript-only SPA.
+The root `index.html` is the Vite entry page for the authenticated React application. The root `server.ts` starts the Express application in `backend/index.js`.
 
-## 5. Outbound persistence organization
+## 5. Database organization
 
-PostgreSQL-specific implementation is grouped under `server/adapters/outbound/postgres/`:
+PostgreSQL-specific code is grouped in `backend/database/postgres/`:
 
-- `index.ts` — PostgreSQL connection pool, Drizzle instance, and connection verification.
+- `connection.ts` — PostgreSQL connection pool, Drizzle instance, and connection verification.
 - `schema.ts` — Drizzle table and relation definitions.
-- `repositories.js` — repository adapter implementation.
+- `repositories.js` — Database repository implementations.
+- `repositories.integration.test.js` — PostgreSQL repository integration test.
 
-`server/adapters/outbound/seedService.js` coordinates the canonical facility catalog and approved initial schedule data using the PostgreSQL adapter. It is part of application startup behavior; do not run it against production during a cleanup or test.
+`backend/database/facilityCatalogService.js` contains the existing catalogue and initial class-schedule synchronization logic. `drizzle.config.ts` points Drizzle Kit to the schema, and versioned SQL migrations remain in `drizzle/`.
 
-Drizzle Kit configuration is at the repository root in `drizzle.config.ts`; versioned SQL migrations remain in `drizzle/`. Moving source files does not change table names, migration contents, IDs, relationships, or database records.
+Moving these source files does not change table names, migrations, IDs, relationships, or production records.
 
-## 6. Authentication and authorization
+## 6. Main data and feature locations
 
-- Firebase Authentication is integrated through the outbound Firebase Auth adapter.
-- Express session middleware validates the server-issued session and resolves the user from the application repository.
-- The API routes use server-side middleware for protected operations.
-- Administrator routes, including `GET /api/admin/analytics` and `GET /api/admin/analytics/export.csv`, require authentication and the System Administrator role.
-- Public pages may read public facility and timetable data, but public visibility does not grant write permissions.
+| Feature | Frontend | Backend |
+|---|---|---|
+| Public homepage | `frontend/public/index.html` and `frontend/public/assets/` | `backend/index.js` serves the page and static assets |
+| Facility directory | `frontend/pages/FacilitiesDirectoryPage.jsx` | `backend/application/useCases/facilityUseCases.js`, domain rules, and database repositories |
+| Facility details | `frontend/pages/FacilityDetailPage.jsx` | Facility use cases and repository |
+| Reservations | `frontend/pages/ReservationsPage.jsx` | `backend/application/useCases/reservationUseCases.js` |
+| Class timetable | `frontend/pages/PublicTimetablePage.jsx` | `backend/application/useCases/classScheduleUseCases.js` |
+| Maintenance reports | `frontend/pages/IssuesPage.jsx` | `backend/application/useCases/maintenanceUseCases.js` |
+| Admin analytics | `frontend/pages/AdminAnalyticsPage.jsx` | `backend/application/useCases/analyticsUseCases.js` |
+| Sign in | `frontend/context/AuthContext.jsx`, `frontend/services/firebase.js` | `backend/services/firebaseAuthService.js`, `backend/middleware/authMiddleware.js`, and user use cases |
 
-## 7. Main operational data
+## 7. Authentication and permissions
 
-The Drizzle schema defines:
+Firebase Authentication is integrated through `backend/services/firebaseAuthService.js`. The backend validates credentials/session tokens, resolves the user, and applies role authorization in `backend/middleware/authMiddleware.js`.
 
-| Entity/table | Responsibility |
-|---|---|
-| `users` | User identity, role, account state, and authentication metadata |
-| `facilities` | Canonical CICS facility inventory and facility settings |
-| `reservations` | Time-bounded facility reservation requests and review status |
-| `class_schedules` | Recurring class schedule blocks and verification metadata |
-| `maintenance_issues` | Reported facility maintenance items and their status |
-| `notifications` | User-scoped notifications |
-| `audit_logs` | Administrative and operational audit events |
+Administrator routes are protected server-side. The frontend only controls what navigation and pages are shown; the API is the security boundary. Admin analytics and account-management endpoints require the System Administrator role.
 
-The inventory catalog is maintained in the domain project information and synchronized by the existing server startup catalog service. Production data integrity must be checked through read-only review or an isolated test database; this documentation change does not seed or alter production data.
+## 8. Build and runtime
 
-## 8. Build/runtime assets
+- Vite builds the authenticated frontend from the root `index.html`.
+- `scripts/copy-homepage-assets.mjs` copies the standalone public homepage and its static assets into `dist/`.
+- `backend/index.js` serves `dist/landing.html` at the public root and the authenticated SPA on application routes.
+- Render uses `bun install --frozen-lockfile && bun run build` and `bun run start`.
 
-- Vite builds the authenticated SPA from root `index.html`.
-- `scripts/copy-public-assets.mjs` copies the standalone landing page and its static assets into `dist/`.
-- Express serves `dist/landing.html` at the public root and serves the SPA for application routes.
-- Render runs `bun install --frozen-lockfile && bun run build`, then `bun run start` on the existing standalone service.
+## 9. Change-safety rules
 
-## 9. WST/SIA mapping
-
-| Course area | Implemented location |
-|---|---|
-| HTML page structure | `client/public/index.html`, Vite root `index.html`, JSX page/components |
-| CSS presentation and responsiveness | `client/public/assets/css/`, `client/styles/`, component styles |
-| JavaScript interactions/API use | `client/public/assets/js/`, JSX JavaScript, `client/services/api.js` |
-| Node.js / Express backend | `server.ts`, `server/index.js`, `server/adapters/inbound/` |
-| REST endpoints | `server/adapters/inbound/routes.js` |
-| Domain/application separation | `server/domain/`, `server/application/` |
-| Ports and adapters | `server/application/ports.js`, `server/adapters/` |
-| Integration/composition | `server/infrastructure/container.js` |
-| Database schema and migrations | `server/adapters/outbound/postgres/`, `drizzle/`, `drizzle.config.ts` |
-| Verification | `server/**/*.test.js`, `.github/workflows/ci.yml`, `docs/QUALITY-ASSURANCE-CHECKLIST.md` |
-
-The official IT 314 guideline allows HTML, CSS, JavaScript/TypeScript, and appropriate web technologies. A stricter group master prompt also called for a Vanilla-JavaScript-only frontend; the current authenticated SPA is React/Vite. Do not misrepresent this as Vanilla-JavaScript-only. Confirm the expected interpretation with the instructor before undertaking a full frontend migration.
-
-## 10. Change-safety rules
-
-1. Keep domain and application use cases independent of Express, React, Drizzle, and Firebase SDK imports.
-2. Keep PostgreSQL connection/schema/repository code within the outbound adapter.
-3. Keep migrations versioned; never edit or apply production migrations as part of cosmetic cleanup.
-4. Keep API role authorization on the server.
-5. Do not interpret a reservation as evidence of physical room occupancy.
-6. Do not add fabricated dashboard data or facility inventory.
-7. Preserve the approved floor-organized facility photographs and exact canonical logo asset.
+1. Keep domain and application rules independent of Express, React, Firebase SDK details, and Drizzle implementation details.
+2. Keep HTTP routes, controllers, and middleware in their clearly named folders.
+3. Keep database access in `backend/database/`; use the repository ports from the application core.
+4. Keep migrations versioned and review them separately from code organization.
+5. Keep administrator access enforced in the backend.
+6. Do not treat a reservation as proof of physical occupancy.
+7. Do not seed or alter production data during a source-only cleanup.
