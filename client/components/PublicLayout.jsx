@@ -128,7 +128,7 @@ export function PublicLayout({ children }) {
           <Link to="/" className="brand-lockup" onClick={handleHomeClick}>
             <span className="brand-logo-badge">
               <img
-                src="/assets/images/facicuse-logo.jpg"
+                src="/assets/images/facicuse-logo.webp"
                 alt="FaCICuSe logo"
                 className="brand-logo-img"
                 style={{ width: '28px', height: '28px' }}
@@ -376,7 +376,7 @@ export function PublicLayout({ children }) {
             <Link to="/" className="brand-lockup" onClick={handleHomeClick}>
               <span className="brand-logo-badge">
                 <img
-                  src="/assets/images/facicuse-logo.jpg"
+                  src="/assets/images/facicuse-logo.webp"
                   alt="FaCICuSe logo"
                   className="brand-logo-img"
                   style={{ width: '28px', height: '28px' }}

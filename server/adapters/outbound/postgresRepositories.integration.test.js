@@ -4,8 +4,8 @@ import assert from 'node:assert/strict';
 process.env.DATABASE_URL ||= 'postgres://postgres:postgres@127.0.0.1:5432/facicuse_test';
 process.env.SQL_SSL = 'false';
 
-const { pool } = await import('../../../src/db/index.ts');
-const { createPostgresAdapters } = await import('./postgresRepositories.js');
+const { pool } = await import('./postgres/index.ts');
+const { createPostgresAdapters } = await import('./postgres/repositories.js');
 
 test('PostgreSQL user adapter persists FaCICuSe password hashes and sanitizes public users', async (t) => {
   await pool.query(`

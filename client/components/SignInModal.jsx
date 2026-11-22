@@ -237,7 +237,7 @@ export function SignInModal({
           <div className="auth-modal-brand">
             <span className="auth-modal-logo-badge">
               <img
-                src="/assets/images/facicuse-logo.jpg"
+                src="/assets/images/facicuse-logo.webp"
                 alt="FaCICuSe logo"
                 className="auth-modal-logo-img"
                 width={28}

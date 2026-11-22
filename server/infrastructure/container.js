@@ -16,7 +16,7 @@ import { createMaintenanceUseCases } from '../application/useCases/maintenanceUs
 import { createUserUseCases } from '../application/useCases/userUseCases.js';
 import { createDashboardUseCases } from '../application/useCases/dashboardUseCases.js';
 import { createAnalyticsUseCases } from '../application/useCases/analyticsUseCases.js';
-import { createPostgresAdapters } from '../adapters/outbound/postgresRepositories.js';
+import { createPostgresAdapters } from '../adapters/outbound/postgres/repositories.js';
 import { createLocalStoreAdapters } from '../adapters/outbound/localStoreRepositories.js';
 import { createAuthProviderAdapter } from '../adapters/outbound/firebaseAuthAdapter.js';
 import * as passwordHasher from '../adapters/outbound/passwordHasher.js';

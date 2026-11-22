@@ -1,5 +1,5 @@
 import { and, asc, desc, eq, inArray } from 'drizzle-orm';
-import { db } from '../../../src/db/index.ts';
+import { db } from './index.ts';
 import {
   auditLogs,
   classSchedules,
@@ -8,17 +8,17 @@ import {
   notifications,
   reservations,
   users,
-} from '../../../src/db/schema.ts';
-import { ACTIVE_BLOCKING_STATUSES } from '../../domain/entities.js';
-import { ConflictError } from '../../domain/errors.js';
-import { TimeSlot } from '../../domain/valueObjects.js';
+} from './schema.ts';
+import { ACTIVE_BLOCKING_STATUSES } from '../../../domain/entities.js';
+import { ConflictError } from '../../../domain/errors.js';
+import { TimeSlot } from '../../../domain/valueObjects.js';
 import {
   assertNoClassScheduleConflicts,
   assertNoReservationClassScheduleConflict,
   formatVerificationStatusLabel,
   getManilaWeekday,
   sortClassSchedules,
-} from '../../domain/classSchedule.js';
+} from '../../../domain/classSchedule.js';
 
 function wrapDbError(action, error) {
   if (error instanceof ConflictError) {

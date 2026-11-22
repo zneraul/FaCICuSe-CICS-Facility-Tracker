@@ -1,6 +1,6 @@
 import { and, eq, inArray } from 'drizzle-orm';
-import { db } from '../../../src/db/index.ts';
-import { classSchedules, facilities } from '../../../src/db/schema.ts';
+import { db } from './postgres/index.ts';
+import { classSchedules, facilities } from './postgres/schema.ts';
 import {
   CICS_FACILITY_CATALOG,
   OBSOLETE_GENERIC_FACILITY_CODES,

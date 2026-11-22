@@ -206,7 +206,7 @@ export function AppShell({ title, primaryAction, children }) {
               <a href="/" className="brand-lockup" onClick={() => setSidebarOpen(false)} aria-label="Return to the public FaCICuSe homepage">
                 <span className="brand-logo-badge">
                   <img
-                    src="/assets/images/facicuse-logo.jpg"
+                    src="/assets/images/facicuse-logo.webp"
                     alt="FaCICuSe logo"
                     className="brand-logo-img"
                     style={{ width: '28px', height: '28px' }}
