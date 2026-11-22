@@ -40,7 +40,6 @@ export function createFacilityUseCases({
   facilityRepo,
   reservationRepo,
   classScheduleRepo = null,
-  issueRepo,
   auditLogPort,
 }) {
   function applyFilters(facilities, query = {}) {
@@ -142,16 +141,12 @@ export function createFacilityUseCases({
       }
       const targetDate = date || getManilaTodayIso();
       const weekday = getManilaWeekday(targetDate);
-      const [dayReservations, allIssues, recurringClasses] = await Promise.all([
+      const [dayReservations, recurringClasses] = await Promise.all([
         reservationRepo.listByFacilityAndDate(id, targetDate),
-        issueRepo.listAll(),
         classScheduleRepo
           ? classScheduleRepo.listByFacilityAndDay(id, weekday)
           : Promise.resolve([]),
       ]);
-      const facilityIssues = allIssues
-        .filter((issue) => issue.facilityId === id && issue.status !== 'Closed')
-        .slice(0, 5);
 
       const schedule = dayReservations
         .filter((r) => r.status === 'Confirmed' || r.status === 'Pending')
@@ -170,7 +165,6 @@ export function createFacilityUseCases({
         scheduleWeekday: weekday,
         schedule,
         classSchedules: sortClassSchedules(recurringClasses).map(formatPublicClassScheduleDto),
-        activeIssues: facilityIssues,
       };
     },
 
