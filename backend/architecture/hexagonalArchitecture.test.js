@@ -27,7 +27,7 @@ function collectSourceFiles(directory) {
   return fs.readdirSync(directory, { withFileTypes: true }).flatMap((entry) => {
     const fullPath = path.join(directory, entry.name);
     if (entry.isDirectory()) return collectSourceFiles(fullPath);
-    return /\.(?:js|mjs|cjs|ts)$/.test(entry.name) ? [fullPath] : [];
+    return /\.(?:js|mjs|cjs|ts)$/.test(entry.name) && !/\.(?:test|spec)\.(?:js|mjs|cjs|ts)$/.test(entry.name) ? [fullPath] : [];
   });
 }
 
