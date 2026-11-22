@@ -9,13 +9,15 @@ This guide helps identify which file is responsible for each part of the website
 | Frontend entry point | `frontend/main.jsx` |
 | Frontend page routing | `frontend/App.jsx` |
 | Public homepage HTML | `frontend/public/index.html` |
+| Public homepage behavior and account menu | `frontend/public/assets/js/public-site.js` |
 | Backend startup | Root `server.ts`, then `backend/index.js` |
 | API URLs | `backend/routes/apiRoutes.js` |
 | API request/response handling | `backend/controllers/apiControllers.js` |
 | Login/session and permissions | `backend/middleware/authMiddleware.js` |
 | Core business rules | `backend/domain/` |
 | Main feature workflows | `backend/application/useCases/` |
-| Database connection and tables | `backend/database/postgres/` |
+| PostgreSQL connection and tables | `backend/database/postgres/` |
+| Local JSON development storage | `backend/database/localJsonRepositories.js` |
 | Environment variables | `backend/config/runtimeConfig.js` |
 | Connecting all backend parts | `backend/bootstrap/applicationContainer.js` |
 
