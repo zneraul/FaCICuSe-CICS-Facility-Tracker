@@ -1,6 +1,8 @@
 /**
- * Outbound & Inbound Port Contracts for the FaCICuSe Application Core.
- * Concrete adapters in server/adapters/ must implement these contracts.
+ * Application boundary contracts for the FaCICuSe Hexagonal Architecture.
+ *
+ * Inbound adapters call the use-case APIs declared below. Outbound adapters
+ * implement the repository and service contracts declared after them.
  */
 
 export function assertPortImplemented(port, methodNames, portName) {
@@ -13,6 +15,63 @@ export function assertPortImplemented(port, methodNames, portName) {
     }
   }
 }
+
+/**
+ * Inbound application ports exposed by the use-case layer to HTTP/controllers.
+ * The composition root validates these contracts before creating adapters.
+ */
+export const INBOUND_USE_CASE_PORT_METHODS = Object.freeze({
+  facility: [
+    'listPublicFacilities',
+    'getPublicFacilityDetail',
+    'listFacilitiesForUser',
+    'getFacilityDetailForUser',
+    'createFacility',
+    'updateFacility',
+    'deleteFacility',
+  ],
+  reservation: [
+    'createReservationRequest',
+    'getCalendarSchedule',
+    'createAdminScheduleBlock',
+    'rescheduleReservation',
+    'listUserReservations',
+    'cancelUserReservation',
+    'listAllReservationsForAdmin',
+    'reviewReservation',
+  ],
+  classSchedule: [
+    'listPublicClassSchedules',
+    'getTodaysClassSchedules',
+    'listAdminClassSchedules',
+    'createClassSchedule',
+    'updateClassSchedule',
+    'verifyClassSchedule',
+    'deleteClassSchedule',
+  ],
+  maintenance: [
+    'submitMaintenanceIssue',
+    'listMaintenanceIssues',
+    'updateMaintenanceIssueForAdmin',
+  ],
+  user: [
+    'authenticateWithEmailPassword',
+    'setOwnPassword',
+    'syncVerifiedGoogleUser',
+    'updateOwnProfile',
+    'listUsersForAdmin',
+    'updateUserForAdmin',
+  ],
+  dashboard: [
+    'getRoleDashboard',
+    'getNotificationsForUser',
+    'markNotificationRead',
+  ],
+  analytics: [
+    'getAdminAnalytics',
+    'exportReservationsCsv',
+  ],
+});
 
 export const FACILITY_REPO_METHODS = [
   'listAll',
