@@ -4,7 +4,7 @@ import { fileURLToPath } from 'node:url';
 import { loadConfig } from './infrastructure/config.js';
 import { buildApplicationContainer } from './infrastructure/container.js';
 import { ensureFacilityCatalog } from './adapters/outbound/seedService.js';
-import { verifyDatabaseConnection } from '../src/db/index.ts';
+import { verifyDatabaseConnection } from './adapters/outbound/postgres/index.ts';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const rootDir = path.resolve(__dirname, '..');

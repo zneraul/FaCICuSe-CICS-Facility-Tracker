@@ -183,7 +183,7 @@ export function LandingPage() {
           <div className="meta-line">
             <span className="brand-logo-badge" style={{ width: '26px', height: '26px', borderRadius: '7px' }}>
               <img
-                src="/assets/images/facicuse-logo.jpg"
+                src="/assets/images/facicuse-logo.webp"
                 alt=""
                 aria-hidden="true"
                 style={{ width: '20px', height: '20px', objectFit: 'contain' }}

@@ -39,7 +39,7 @@ floor-folder photographs.
 The generic root-level images `cics-building.jpg`, `cics-classroom.jpg`,
 `cics-lab.jpg`, and `cics-smart-room.jpg` are no longer needed. Category
 fallbacks now use real photographs already included in the floor folders.
-The official `facicuse-logo.jpg` remains at the images root.
+The official `facicuse-logo.webp` remains at the images root.
 
 ## Image behavior and compatibility
 
