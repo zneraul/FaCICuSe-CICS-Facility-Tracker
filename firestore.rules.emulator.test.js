@@ -290,7 +290,7 @@ test('maintenance issues: only the reporter and admins can read reports', async 
   )));
   await assertFails(getDocs(query(
     collection(otherDb, 'maintenanceIssues'),
-    where('reporterId', '==', 'student-2'),
+    where('reporterId', '==', 'student-1'),
   )));
 
   await seedAdmin();
