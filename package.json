@@ -11,7 +11,7 @@
     "clean": "rm -rf dist server.js",
     "lint": "tsc --noEmit",
     "test:firestore": "node --experimental-strip-types --test firestore.rules.test.ts",
-    "test": "node --test backend/domain/rules.test.js backend/application/useCases/authentication.test.js backend/config/runtimeConfig.test.js backend/architecture/hexagonalArchitecture.test.js && npm run test:firestore"
+    "test": "node --test backend/domain/rules.test.js backend/application/useCases/authentication.test.js backend/application/useCases/facilityUseCases.test.js backend/config/runtimeConfig.test.js backend/architecture/hexagonalArchitecture.test.js && npm run test:firestore"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.3.3",
