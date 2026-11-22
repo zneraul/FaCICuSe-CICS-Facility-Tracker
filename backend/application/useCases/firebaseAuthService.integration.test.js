@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 
 process.env.FIREBASE_AUTH_EMULATOR_HOST ||= '127.0.0.1:9099';
 
-const { createAuthProviderAdapter } = await import('../../adapters/outbound/firebaseAuthAdapter.js');
+const { createAuthProviderAdapter } = await import('../../services/firebaseAuthService.js');
 const provider = createAuthProviderAdapter({ sessionSecret: 'firebase-emulator-test-session-secret' });
 
 test('Firebase Admin verifies an ID token issued by the Auth Emulator', async () => {
