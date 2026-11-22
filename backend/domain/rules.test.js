@@ -39,7 +39,7 @@ import {
 import { createReservationUseCases } from '../application/useCases/reservationUseCases.js';
 import { createMaintenanceUseCases } from '../application/useCases/maintenanceUseCases.js';
 import { createUserUseCases } from '../application/useCases/userUseCases.js';
-import { createLocalStoreAdapters } from '../database/localStoreRepositories.js';
+import { createLocalJsonAdapters } from '../database/localJsonRepositories.js';
 import {
   resolvePostLoginPath,
   validateUniversityEmailInput,
@@ -606,7 +606,7 @@ test('passwordHasher uses salted scrypt hashes and deterministic SHA-256 verific
 test('reservation and maintenance workflows notify both requester and active administrators with read-state updates', async () => {
   const tmpStore = path.join(os.tmpdir(), `facicuse-notif-test-${Date.now()}-${Math.random().toString(36).slice(2)}.json`);
   try {
-    const adapters = createLocalStoreAdapters({ storeFilePath: tmpStore });
+    const adapters = createLocalJsonAdapters({ storeFilePath: tmpStore });
     const reservationUseCases = createReservationUseCases({
       reservationRepo: adapters.reservationRepo,
       facilityRepo: adapters.facilityRepo,
@@ -684,7 +684,7 @@ test('reservation and maintenance workflows notify both requester and active adm
 test('authenticateWithEmailPassword enforces university email domains and rejects invalid credentials', async () => {
   const tmpStore = path.join(os.tmpdir(), `facicuse-auth-login-${Date.now()}.json`);
   try {
-    const adapters = createLocalStoreAdapters(tmpStore);
+    const adapters = createLocalJsonAdapters(tmpStore);
     const domainPolicy = new EmailDomainPolicy(DEFAULT_UNIVERSITY_DOMAINS);
     const userUseCases = createUserUseCases({
       userRepo: adapters.userRepo,
@@ -878,7 +878,7 @@ test('computeAdminAnalytics exposes facility utilization, booking demand, and ma
   ]);
 });
 
-test('localStoreRepositories filter out any legacy isDemo records when reading from disk', async () => {
+test('localJsonRepositories filter out any legacy isDemo records when reading from disk', async () => {
   const tmpStore = path.join(os.tmpdir(), `facicuse-legacy-demo-${Date.now()}.json`);
   try {
     fs.writeFileSync(
@@ -907,7 +907,7 @@ test('localStoreRepositories filter out any legacy isDemo records when reading f
       'utf8'
     );
 
-    const adapters = createLocalStoreAdapters({ storeFilePath: tmpStore });
+    const adapters = createLocalJsonAdapters({ storeFilePath: tmpStore });
     const users = await adapters.userRepo.listAll();
     const reservations = await adapters.reservationRepo.listAll();
     const issues = await adapters.issueRepo.listAll();
