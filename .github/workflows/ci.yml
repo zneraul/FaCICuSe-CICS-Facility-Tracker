@@ -40,14 +40,23 @@ jobs:
         with:
           node-version: 22
           cache: npm
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v2
+          with:
+            bun-version: latest
       - name: Set up Java for Firebase Auth Emulator
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '21'
+      - name: Regenerate and validate package-manager lockfiles
+        run: |
+          npm install --package-lock-only --ignore-scripts --no-audit --no-fund
+          bun install --lockfile-only --ignore-scripts
+          bun install --frozen-lockfile --dry-run
       - name: Install dependencies
         run: npm ci
-      - name: Run domain and mocked HTTP authentication regression tests
+      - name: Run domain, authentication, architecture, and Firestore rules regression tests
         run: npm test
       - name: Run Firebase Admin integration tests against Auth Emulator
         run: npx --yes firebase-tools@14.22.0 emulators:exec --project big-anvil-0lvvl --only auth --config firebase.test.json "node --test backend/application/useCases/firebaseAuthService.integration.test.js"
@@ -63,3 +72,13 @@ jobs:
         run: npx --yes firebase-tools@14.22.0 emulators:exec --project big-anvil-0lvvl --only auth --config firebase.test.json "node --test backend/application/useCases/firebasePostgresAuth.integration.test.js"
       - name: Build frontend
         run: npm run build
+      - name: Upload regenerated lockfiles
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: facicuse-lockfiles-${{ github.sha }}
+          path: |
+            package-lock.json
+            bun.lock
+          if-no-files-found: error
+          retention-days: 1
