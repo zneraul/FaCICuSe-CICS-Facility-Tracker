@@ -70,6 +70,13 @@ Configure these variables in the standalone Render service:
 
 The application currently uses the configured Neon PostgreSQL database through `DATABASE_URL`. Repository separation does not create or migrate a database. Keep database credentials in Render environment settings, not in Git.
 
+## Architecture and academic project alignment
+
+- [Architecture and project structure](docs/ARCHITECTURE-AND-STRUCTURE.md)
+- [WST/SIA finalization report](docs/FINALIZATION-REPORT.md)
+
+The backend is organized around Hexagonal Architecture (Ports and Adapters). The public landing page uses HTML, CSS and Vanilla JavaScript; the authenticated workspace currently uses React/Vite. The WST guide's strict Vanilla-JavaScript-only frontend requirement remains documented as an outstanding migration item rather than being presented as completed.
+
 ## Facility photographs
 
 Use only approved source photographs in `client/public/assets/images/facilities/`. Preserve the existing floor folders and exact filenames. See [Facility Photo Guide](docs/FACILITY-IMAGE-GUIDE.md).
