@@ -1,6 +1,7 @@
 import { EmailDomainPolicy } from '../domain/valueObjects.js';
 import {
   AUDIT_LOG_PORT_METHODS,
+  INBOUND_USE_CASE_PORT_METHODS,
   CLASS_SCHEDULE_REPO_METHODS,
   FACILITY_REPO_METHODS,
   ISSUE_REPO_METHODS,
@@ -111,7 +112,16 @@ export function buildApplicationContainer(config) {
     auditLogPort,
   });
 
-  // 3. Inbound Adapters
+  // Validate inbound use-case ports before the HTTP adapters depend on them.
+  assertPortImplemented(facilityUseCases, INBOUND_USE_CASE_PORT_METHODS.facility, 'FacilityUseCasePort');
+  assertPortImplemented(reservationUseCases, INBOUND_USE_CASE_PORT_METHODS.reservation, 'ReservationUseCasePort');
+  assertPortImplemented(classScheduleUseCases, INBOUND_USE_CASE_PORT_METHODS.classSchedule, 'ClassScheduleUseCasePort');
+  assertPortImplemented(maintenanceUseCases, INBOUND_USE_CASE_PORT_METHODS.maintenance, 'MaintenanceUseCasePort');
+  assertPortImplemented(userUseCases, INBOUND_USE_CASE_PORT_METHODS.user, 'UserUseCasePort');
+  assertPortImplemented(dashboardUseCases, INBOUND_USE_CASE_PORT_METHODS.dashboard, 'DashboardUseCasePort');
+  assertPortImplemented(analyticsUseCases, INBOUND_USE_CASE_PORT_METHODS.analytics, 'AnalyticsUseCasePort');
+
+  // 4. Inbound Adapters
   const authMiddleware = createAuthMiddleware({
     authProvider,
     userRepo,
