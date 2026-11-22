@@ -6,11 +6,11 @@
   "scripts": {
     "dev": "tsx server.ts",
     "start": "node server.ts",
-    "build": "vite build && node scripts/copy-public-assets.mjs",
+    "build": "vite build && node scripts/copy-homepage-assets.mjs",
     "preview": "vite preview",
     "clean": "rm -rf dist server.js",
     "lint": "tsc --noEmit",
-    "test": "node --test server/domain/rules.test.js server/application/useCases/authentication.test.js server/infrastructure/config.test.js"
+    "test": "node --test backend/domain/rules.test.js backend/application/useCases/authentication.test.js backend/config/runtimeConfig.test.js"
   },
   "dependencies": {
     "@google/genai": "^2.4.0",

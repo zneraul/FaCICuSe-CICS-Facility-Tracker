@@ -1,13 +1,13 @@
 # CICS Facility Photo Guide
 
 The approved source photographs are stored in
-`client/public/assets/images/facilities/`, organized by floor. Preserve the
+`frontend/public/assets/images/facilities/`, organized by floor. Preserve the
 folder structure and exact source filenames; do not flatten or duplicate them.
 
 ## Asset structure
 
 ```text
-client/public/assets/images/facilities/
+frontend/public/assets/images/facilities/
 ├── 1st Floor/
 ├── 2nd Floor/
 ├── 3rd Floor/
@@ -18,7 +18,7 @@ client/public/assets/images/facilities/
 
 ## Corrected facility mappings
 
-The canonical mapping is maintained in `server/domain/facilityMedia.js`.
+The canonical mapping is maintained in `backend/domain/facilityMedia.js`.
 The four reported records now point to their matching original photographs:
 
 - `CICS-2F-MT` — `2nd Floor/All Gender Restroom.jpeg`

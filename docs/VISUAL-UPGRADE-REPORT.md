@@ -1,7 +1,7 @@
 # Visual Upgrade Report — CICS Photos
 
 The approved CICS facility photographs are already stored in the repository under
-`client/public/assets/images/facilities/`, organized into `1st Floor` through
+`frontend/public/assets/images/facilities/`, organized into `1st Floor` through
 `5th Floor` and `Building` folders. The implementation maps canonical facility
 codes directly to these existing source files, preserving their exact filenames,
 extensions, and folder structure.

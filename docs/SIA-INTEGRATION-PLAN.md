@@ -1,54 +1,52 @@
 # SIA System Integration and Verification Plan — FaCICuSe
 
-This is the implementation-focused integration plan for the existing FaCICuSe codebase. It supplements the SIA final project documentation template; it is not a substitute for the group's full title page, project context, objectives, scope, SDLC schedule, team responsibilities, diagrams, or final presentation material.
+This document maps the current implementation to its system components and verification responsibilities. It complements the formal SIA project report; it does not replace the group's approved proposal, schedule, team assignments, or required diagrams.
 
-## 1. Integration overview
+## 1. Integrated components
 
-FaCICuSe is composed of a browser frontend, an Express REST API, a domain/application core, outbound persistence and identity adapters, and PostgreSQL in production. The composition root is `server/infrastructure/container.js`.
-
-Integration order:
-
-1. Validate runtime environment configuration.
-2. Establish the configured PostgreSQL connection in production.
-3. Construct outbound adapters and validate their port contracts.
-4. Construct domain/application use cases.
-5. Register inbound HTTP controllers, authentication middleware, and role-protected routes.
-6. Serve the public landing page, static assets, and authenticated SPA.
-7. Run feature-level and end-to-end verification against isolated test services/data.
-
-No schema migration, facility catalog synchronization, or destructive database action should be executed against the shared production database as part of this source organization work.
-
-## 2. Integrated software components
-
-| Component | Source location | Integration responsibility |
+| Component | Source location | Responsibility |
 |---|---|---|
-| Public website | `client/public/` | Public CICS homepage, HTML/CSS/vanilla JS assets |
-| Authenticated workspace | `client/` | SPA routes, dashboards, role-specific workflows |
-| HTTP/API adapter | `server/adapters/inbound/` | Express routes, request parsing, authentication, authorization, response/error handling |
-| Application core | `server/application/` | Facility, reservation, schedule, maintenance, user, dashboard, and analytics use cases |
-| Domain core | `server/domain/` | Business rules, domain objects, validations, facility catalog |
-| PostgreSQL adapter | `server/adapters/outbound/postgres/` and `server/adapters/outbound/postgres/repositories.js` | Drizzle connection/schema and repository implementations |
-| Other outbound adapters | `server/adapters/outbound/` | Local development store, Firebase Auth, password hashing, catalog setup |
-| Composition/configuration | `server/infrastructure/` | Runtime validation and dependency wiring |
-| Database change set | `drizzle/` and `drizzle.config.ts` | Versioned SQL migrations and Drizzle Kit schema configuration |
+| Public homepage | `frontend/public/` | CICS homepage, public facility information, and public browser scripts |
+| Authenticated website | `frontend/` | Pages, dashboards, navigation, contexts, API client, and Firebase client |
+| API routes | `backend/routes/apiRoutes.js` | Defines REST endpoints under `/api` |
+| Controllers | `backend/controllers/apiControllers.js` | Handles incoming requests and outgoing API responses |
+| Middleware | `backend/middleware/` | Session authentication, role authorization, rate limiting, and error handling |
+| Domain core | `backend/domain/` | Business entities, validation rules, value objects, and facility/schedule policies |
+| Application core | `backend/application/` | Use cases and port contracts |
+| Database | `backend/database/` | PostgreSQL and local repository implementations |
+| Authentication service | `backend/services/firebaseAuthService.js` | Firebase Admin ID-token verification and session token support |
+| Password utilities | `backend/utils/passwordHasher.js` | Password hashing and verification |
+| Runtime configuration | `backend/config/runtimeConfig.js` | Reads and validates environment settings |
+| Application bootstrap | `backend/bootstrap/applicationContainer.js` | Builds the application by wiring services, repositories, use cases, and controllers |
+| Database changes | `drizzle/`, `drizzle.config.ts` | Versioned PostgreSQL migrations and Drizzle configuration |
+
+## 2. Integration flow
+
+1. The root `server.ts` calls `backend/index.js` to start the Express application.
+2. Runtime settings are validated through `backend/config/runtimeConfig.js`.
+3. `backend/bootstrap/applicationContainer.js` creates database and Firebase adapters, validates their port contracts, and constructs application use cases.
+4. The controllers are connected to `backend/routes/apiRoutes.js`.
+5. Authentication and role middleware protect the required routes.
+6. The frontend communicates with the backend using the `/api` endpoints.
+7. PostgreSQL repositories persist production operational data.
 
 ## 3. Resource allocation
 
 | Resource | Use | Environment |
 |---|---|---|
-| Node.js 22+ | Express server and tests | Local/CI/Render |
-| Bun or npm | Dependency installation and build tooling | Local/CI/Render |
-| PostgreSQL | Persistent users, facilities, reservations, schedules, maintenance, notifications, and audit records | Isolated CI/test DB and configured production DB |
-| Firebase Auth Emulator | Authentication integration tests | CI/test only |
+| Node.js 22+ | Express server and automated tests | Local, CI, Render |
+| npm or Bun | Dependency installation and build | Local, CI, Render |
+| PostgreSQL | Users, facilities, reservations, schedules, maintenance, notifications, audit logs | Isolated CI database and configured production database |
+| Firebase Auth Emulator | Authentication integration testing | CI only |
 | GitHub Actions | Automated test/build gate | CI |
-| Render web service | Existing standalone website hosting | Production |
-| Browser/devtools | Responsive, navigation, accessibility, and user-flow checks | Local/staging/production read-only |
+| Render | Existing website hosting | Production |
+| Browser and developer tools | Responsive, navigation, accessibility, and user-flow checks | Local or production read-only review |
 
-The Render service and Neon database are existing resources. This plan does not create paid resources or a separate production database.
+This project uses the existing Render service and configured Neon database. This plan does not create additional paid infrastructure.
 
 ## 4. Verification plan
 
-Run the automated commands from the repository root:
+Run the following commands from the repository root:
 
 ```bash
 npm test
@@ -56,45 +54,42 @@ npm run lint
 npm run build
 ```
 
-GitHub Actions also runs Firebase Auth Emulator integration checks and PostgreSQL repository integration tests against its isolated PostgreSQL service.
+GitHub Actions also runs Firebase Auth Emulator tests and PostgreSQL repository integration tests against its isolated CI database.
 
-| Test area | Verification procedure | Expected result |
+| Area | Verification | Expected result |
 |---|---|---|
-| Runtime health | Request `GET /api/health` | HTTP success and service health payload |
-| Public landing | Load `/` and inspect logo, CSS, scripts, and navigation | Homepage and public static assets load without missing files |
-| Public facilities | Request `GET /api/public/facilities` and open facility details | Only canonical public facility records are returned |
-| Authentication | Test approved university account sign-in, invalid credentials, session refresh, and logout | Session is established/cleared correctly; invalid sign-in is rejected |
-| Role authorization | Call admin endpoints as a non-admin and as an administrator | Non-admin access is denied server-side; admin access is permitted |
-| Reservations | Create overlapping and non-overlapping reservations in an isolated test DB | Conflicts are rejected; valid records persist |
-| Schedules | Verify schedule retrieval and conflict handling | Schedule rules are applied consistently |
-| Maintenance | Create and update maintenance reports in test data | Records persist and status changes are returned |
-| Analytics | Compare computed results against known isolated test records | Metrics are derived from records; empty data is handled without fabricated values |
-| Responsive UI | Check desktop, tablet, and mobile widths | No clipped controls, unreadable text, or unintended horizontal overflow |
-| Assets | Check the logo and facility image paths | No missing logo or broken image paths |
+| Runtime | Request `GET /api/health` | API returns a successful health response |
+| Homepage | Load `/` and check the logo, CSS, scripts, and links | Public page and assets load |
+| Facilities | Load the public directory and a facility detail | Only canonical public facility data is shown |
+| Authentication | Test approved university sign-in, invalid sign-in, session restore, and logout | Valid sessions are established and invalid requests are rejected |
+| Authorization | Call admin endpoints as a non-admin and as an administrator | Non-admin access is denied by the backend |
+| Reservations | Test overlapping and valid reservations using isolated data | Conflicts are rejected; valid requests persist |
+| Timetable | Load schedules and test schedule conflict rules | Schedule data and conflict validation work |
+| Maintenance | Create and update a maintenance report in test data | Maintenance records persist and status changes are returned |
+| Analytics | Compare output against known isolated test records | Metrics are derived from records without fabricated values |
+| Responsive UI | Review desktop, tablet, and mobile widths | Controls remain readable and usable |
 
-Do not test reservation creation, maintenance mutations, login setup, or catalog synchronization using live production records. Use an isolated CI/test database or an explicitly approved staging dataset.
+Do not test production by creating reservations, maintenance records, accounts, or sample analytics data. Use CI or isolated development data for mutation tests.
 
-## 5. Change procedures and history
+## 5. Change procedure
 
-1. Create a focused branch for each change.
-2. Inspect the relevant import graph and route dependencies before moving files.
-3. Keep each structural move atomic: move the source file, update all imports/configuration, and update tests/documentation in the same change.
-4. Run the automated test, lint, and build gates before merging.
-5. Review the changed-file list and CI results before merge.
-6. Trigger a Render deployment only under a separately authorized release step. The current standalone Render service has automatic deployment disabled.
-7. Keep production DB migrations and data changes in a separate reviewed change set.
+1. Create a focused branch for each structural or feature change.
+2. Review all imports, scripts, configuration paths, and documentation references before moving a file.
+3. Keep a file move and its import updates in the same commit/PR.
+4. Run the automated test, lint, and build checks before merging.
+5. Review the PR diff and CI result.
+6. Trigger a production deployment only as a separate release action.
+7. Handle production database migrations and data changes in a separate reviewed change set.
 
-### This finalization change
+## 6. This project-structure update
 
-- Consolidates the PostgreSQL pool, Drizzle schema, and repository implementation under the outbound PostgreSQL adapter.
-- Moves the Drizzle Kit configuration to the repository root and updates its schema path.
-- Updates runtime, seed, composition-root, and integration-test imports to the new locations.
-- Replaces the old logo asset with an optimized WebP rendition derived from the uploaded image; all UI references now use the canonical `.webp` path.
-- Updates architecture, QA, and SIA integration documentation.
-- Does not alter REST route paths, domain rules, table definitions, SQL migration contents, environment variable names, the production database, the original repository, or Render infrastructure.
+- Renames the main website source folder from `client/` to `frontend/`.
+- Renames the Express source folder from `server/` to `backend/`.
+- Groups routes, controllers, middleware, database code, services, utilities, configuration, and bootstrap code under clear folder names.
+- Moves the Vite static image into `frontend/public/assets/` while retaining its existing browser URL.
+- Updates package scripts, CI paths, Drizzle configuration, imports, and documentation.
+- Does not change API endpoint paths, domain rules, page behavior, database tables, SQL migrations, environment variable names, or production data.
 
-## 6. SIA template completion items outside this technical integration plan
+## 7. Academic report items to complete using approved group information
 
-The SIA template also calls for a formal project report containing project context, purpose/description, SMART objectives, scope and limitations, SDLC model/timeline, named team assignments and approval responsibilities, functional/non-functional requirements, Context Diagram, Level-0 DFD, use-case diagram, ERD, GUI documentation, integration resources, training, detailed test responsibility/schedule, and change history.
-
-These items must be completed and verified by the project group using its actual approved proposal, timeline, member assignments, and instructor feedback. They should not be fabricated in the code repository.
+The formal SIA report may also require project context, objectives, scope and limitations, the selected SDLC, timeline, assigned member responsibilities, functional and non-functional requirements, context diagram, DFD, use-case diagram, ERD, interface documentation, training plan, test schedule, and change history. These details must match the group's actual approved work and must not be invented in the repository.

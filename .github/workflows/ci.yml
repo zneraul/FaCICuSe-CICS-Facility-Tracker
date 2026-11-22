@@ -50,16 +50,16 @@ jobs:
       - name: Run domain and mocked HTTP authentication regression tests
         run: npm test
       - name: Run Firebase Admin integration tests against Auth Emulator
-        run: npx --yes firebase-tools@14.22.0 emulators:exec --project big-anvil-0lvvl --only auth --config firebase.test.json "node --test server/application/useCases/firebaseAuthAdapter.integration.test.js"
+        run: npx --yes firebase-tools@14.22.0 emulators:exec --project big-anvil-0lvvl --only auth --config firebase.test.json "node --test backend/application/useCases/firebaseAuthService.integration.test.js"
       - name: Run PostgreSQL adapter integration tests
         env:
           DATABASE_URL: postgres://postgres:postgres@127.0.0.1:5432/facicuse_test
           SQL_SSL: 'false'
-        run: node --test server/adapters/outbound/postgresRepositories.integration.test.js
+        run: node --test backend/database/postgres/repositories.integration.test.js
       - name: Run end-to-end Firebase + PostgreSQL authentication flow
         env:
           DATABASE_URL: postgres://postgres:postgres@127.0.0.1:5432/facicuse_test
           SQL_SSL: 'false'
-        run: npx --yes firebase-tools@14.22.0 emulators:exec --project big-anvil-0lvvl --only auth --config firebase.test.json "node --test server/application/useCases/firebasePostgresAuth.integration.test.js"
+        run: npx --yes firebase-tools@14.22.0 emulators:exec --project big-anvil-0lvvl --only auth --config firebase.test.json "node --test backend/application/useCases/firebasePostgresAuth.integration.test.js"
       - name: Build frontend
         run: npm run build

@@ -8,50 +8,53 @@ FaCICuSe (Connected Insights, Coordinated Spaces) is a facility discovery, reser
 
 This is the standalone repository and deployment. The original `FaCICuSe` repository and its Render service remain separate and unchanged.
 
-## Architecture
+## Project folders
 
-The backend follows **Hexagonal Architecture (Ports and Adapters)**. Domain and application rules are kept separate from Express, persistence, and external identity-provider details. The current frontend contains a React/Vite authenticated workspace and a separate semantic HTML public landing page with standalone CSS and vanilla JavaScript assets.
+The top-level folders use familiar frontend/backend names. Each folder is arranged by the part of the website it powers.
 
-- `client/` — Frontend application.
-  - `App.jsx`, `main.jsx` — SPA entry and route composition.
-  - `components/` — Shared layouts, navigation, UI components, and error handling.
-  - `context/` — Authentication, modal, and notification state.
-  - `pages/` — Public pages, role workspaces, reservations, schedules, facility pages, and admin analytics.
-  - `services/` — API and Firebase client integration.
-  - `utils/` — Client-side helpers.
-  - `public/index.html` — Standalone public homepage source.
-  - `public/assets/css/`, `public/assets/js/` — Homepage, modal, theme, and interaction assets.
-  - `public/assets/images/` — Official logo and approved CICS photographs; facility photos remain organized by floor.
-- `server/domain/` — Entities, value objects, domain rules, catalog mappings, and domain tests.
-- `server/application/` — Application use cases and port contracts.
-- `server/adapters/inbound/` — Express REST routes, controllers, authentication/authorization middleware, rate limiting, and error handling.
-- `server/adapters/outbound/` — PostgreSQL and local-store repositories, Firebase Auth adapter, password hashing, and catalog initialization.
-  - `postgres/` — PostgreSQL pool/Drizzle connection, schema, and PostgreSQL repository adapter.
-- `server/infrastructure/` — Environment validation and the application composition root.
-- `drizzle.config.ts` — Drizzle Kit configuration.
+- `frontend/` — All browser-side code.
+  - `main.jsx`, `App.jsx` — React entry point and page routing.
+  - `components/` — Reusable interface parts such as navigation, layout, and sign-in.
+  - `pages/` — Homepage views, facility directory, reservations, timetable, maintenance, and admin pages.
+  - `context/` — Shared authentication, notifications, and modal state.
+  - `services/` — Requests to the backend API and Firebase client setup.
+  - `styles/` — Stylesheets for the authenticated workspace.
+  - `utils/` — Frontend helper functions.
+  - `public/index.html` — Standalone public homepage.
+  - `public/assets/css/`, `public/assets/js/` — Homepage styles and browser interactions.
+  - `public/assets/images/` — Official FaCICuSe logo, CICS building images, facility photos by floor, and other website images.
+- `backend/` — Node.js and Express application.
+  - `index.js` — Creates the Express server, connects the API, and serves the website.
+  - `routes/apiRoutes.js` — API URL definitions and route-to-controller mapping.
+  - `controllers/apiControllers.js` — Handles API requests and responses.
+  - `middleware/` — Authentication, role authorization, login rate limiting, and error handling.
+  - `domain/` — Core business rules, entities, value objects, and facility information.
+  - `application/useCases/` — Reservation, facility, timetable, maintenance, user, dashboard, and analytics workflows.
+  - `application/ports.js` — Contracts used by the application core.
+  - `database/postgres/` — PostgreSQL connection, Drizzle schema, and database repositories.
+  - `database/localStoreRepositories.js` — Local JSON repository for non-production development.
+  - `database/facilityCatalogService.js` — Existing facility catalogue and initial schedule synchronization.
+  - `services/firebaseAuthService.js` — Firebase Admin authentication integration.
+  - `utils/passwordHasher.js` — Password hashing and verification helpers.
+  - `config/runtimeConfig.js` — Environment-variable validation and runtime settings.
+  - `bootstrap/applicationContainer.js` — Connects repositories, services, use cases, controllers, and routes.
 - `drizzle/` — Versioned PostgreSQL SQL migrations.
-- `docs/` — Architecture, SIA integration/verification guidance, image guide, and QA documentation.
-- `firebase-applet-config.json`, `firebase.test.json`, and `firestore.rules*` — Firebase client/emulator/security configuration and its policy test assets; the application's operational records are stored through the PostgreSQL adapter in production.
+- `scripts/` — Small build/helper scripts.
+- `docs/` — Project architecture, folder guide, image guide, SIA integration, and QA notes.
 
-See [Project Architecture](docs/PROJECT-ARCHITECTURE.md) for the request flow and layer responsibilities, and [SIA Integration Plan](docs/SIA-INTEGRATION-PLAN.md) for integration, testing, and change-control documentation.
+For a quick explanation of where a particular feature is implemented, see [Project Structure and Code Map](docs/PROJECT-STRUCTURE.md).
 
-## Technology map
+## Technology
 
-- **Frontend:** HTML5, CSS3, JavaScript/JSX, React, and Vite. The public landing page is standalone HTML/CSS/vanilla JavaScript; the authenticated workspace is the existing React SPA.
+- **Frontend:** HTML5, CSS3, JavaScript/JSX, React, and Vite.
 - **Backend:** Node.js and Express.js REST API.
-- **Persistence:** PostgreSQL with Drizzle ORM; the local JSON repository adapter is available for non-production development only.
-- **Identity:** Firebase Authentication integration and server-issued HTTP-only sessions.
-- **Architecture:** Hexagonal Architecture / Ports and Adapters.
-
-The official IT 314 guideline specifies HTML, CSS, JavaScript/TypeScript and appropriate web technologies alongside a Node.js/Express backend. The stricter project master prompt also described a Vanilla-JavaScript-only frontend. This repository preserves the working React workspace rather than attempting a high-risk frontend rewrite as part of a file-organization task. Confirm with the instructor whether the stricter Vanilla-JavaScript-only interpretation is mandatory before treating that separate migration question as closed.
-
-## Requirements
-
-- Node.js 22+
-- Bun (used by the current Render build configuration) or npm for local dependency installation
-- PostgreSQL for production
+- **Database:** PostgreSQL with Drizzle ORM.
+- **Authentication:** Firebase Authentication integration and server-issued HTTP-only sessions.
+- **Architecture:** Domain and application core separated from HTTP, database, and external-service implementations using Ports and Adapters.
 
 ## Local development
+
+Requirements: Node.js 22+, npm or Bun, and a local PostgreSQL database for full database-backed testing.
 
 ```bash
 npm install
@@ -68,34 +71,27 @@ npm run lint
 npm run build
 ```
 
-The GitHub Actions workflow runs domain/auth tests, Firebase Auth emulator integration checks, PostgreSQL adapter integration tests against an isolated CI database, and the production build.
+GitHub Actions also runs Firebase Auth Emulator integration tests, PostgreSQL repository integration tests against an isolated CI database, and the production build.
 
 ## Deployment
 
-The standalone application is hosted on Render. The existing Render service is configured independently in the Render Dashboard; this repository intentionally does not include legacy Vercel routing or an outdated Render Blueprint.
+The standalone application is hosted on the existing Render service:
 
 **Production website:** [Open FaCICuSe](https://facicuse-cics-facility-tracker-fg6s.onrender.com)
 
-Configure these variables in the standalone Render service:
+Render is configured separately from this repository. Its current build command is `bun install --frozen-lockfile && bun run build`; its start command is `bun run start`.
 
-- `NODE_ENV=production`
-- `PORT` (Render supplies the service port)
-- `APP_URL` (the standalone Render URL)
-- `DATABASE_URL` (PostgreSQL connection string)
-- `SESSION_SECRET` (random value, at least 32 characters)
-- `ALLOWED_UNIVERSITY_DOMAINS`
-- `ADMIN_BOOTSTRAP_EMAILS` (only authorized administrator accounts)
+Required production settings include `NODE_ENV`, `PORT`, `APP_URL`, `DATABASE_URL`, `SESSION_SECRET`, `ALLOWED_UNIVERSITY_DOMAINS`, and `ADMIN_BOOTSTRAP_EMAILS`. Keep values in Render environment settings, not in Git.
 
-The application currently uses the configured Neon PostgreSQL database through `DATABASE_URL`. Repository separation does not create, migrate, or isolate a database. Keep database credentials in Render environment settings, not in Git. Do not run migrations or catalog synchronization against production as part of a source-only cleanup.
+The application uses the configured Neon PostgreSQL database through `DATABASE_URL`. Repository organization does not create, migrate, or isolate a database. Do not run migrations or catalogue synchronization against production as part of a file-organization change.
 
-## Facility photographs and branding
+## Branding and facility photographs
 
-Use the exact official logo at `client/public/assets/images/facicuse-logo.webp`. Keep the source image's colors and aspect ratio. Use only approved source photographs in `client/public/assets/images/facilities/`; preserve the existing floor folders and exact filenames. See [Facility Photo Guide](docs/FACILITY-IMAGE-GUIDE.md).
+Use the logo at `frontend/public/assets/images/facicuse-logo.webp`. The approved CICS facility photographs are under `frontend/public/assets/images/facilities/`. Preserve the floor folders and exact original filenames. See [Facility Image Guide](docs/FACILITY-IMAGE-GUIDE.md).
 
-## Safety and access control
+## Access control and data safety
 
-- Do not commit secrets, private account details, database URLs, or runtime data.
-- Keep production persistence and identity credentials in Render environment settings.
-- Do not run schema migrations, seed operations, or destructive SQL against production without a separate reviewed plan.
-- Administrator-only analytics and management endpoints must remain protected by server-side role authorization, not navigation visibility alone.
-- Reservation records indicate bookings, not verified physical occupancy; do not present bookings as sensor-confirmed presence.
+- Administrator-only analytics and management endpoints must be protected by backend role authorization, not only by hiding navigation links.
+- Reservation records represent scheduled bookings, not confirmed physical room occupancy.
+- Do not add sample users, reservations, or maintenance records to production.
+- Keep database credentials and other secrets out of source control.
