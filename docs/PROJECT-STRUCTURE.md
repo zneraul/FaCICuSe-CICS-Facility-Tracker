@@ -9,6 +9,7 @@ This guide helps identify which file is responsible for each part of the website
 | Frontend entry point | `frontend/main.jsx` |
 | Frontend page routing | `frontend/App.jsx` |
 | Public homepage HTML | `frontend/public/index.html` |
+| Public homepage behavior and account menu | `frontend/public/assets/js/public-site.js` |
 | Backend startup | Root `server.ts`, then `backend/index.js` |
 | API URLs | `backend/routes/apiRoutes.js` |
 | API request/response handling | `backend/controllers/apiControllers.js` |
