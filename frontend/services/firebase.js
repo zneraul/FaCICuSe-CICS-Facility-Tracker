@@ -4,9 +4,13 @@ import {
   doc,
   getDocFromServer,
   getFirestore,
+  runTransaction,
   serverTimestamp,
-  setDoc,
 } from 'firebase/firestore';
+import {
+  buildUserProfileCreateFields,
+  buildUserProfileUpdateFields,
+} from './userProfileSync.js';
 import firebaseConfig from '../../firebase-applet-config.json';
 
 const app = initializeApp(firebaseConfig);
@@ -63,30 +67,37 @@ async function testConnection() {
 testConnection();
 
 /**
- * Synchronizes a verified Firebase Auth user's profile document to Firestore (/users/{uid}),
- * strictly conforming to firebase-blueprint.json and firestore.rules.
+ * Synchronizes a verified Firebase Auth user's profile document to Firestore (/users/{uid}).
+ * Creates a complete rule-compliant document or updates only owner-editable profile fields.
+ * Role, email, account status, and creation time remain immutable for client-side sync.
  */
 export async function syncUserProfileToFirestore(firebaseUser, profile) {
   if (!firebaseUser?.uid || !firebaseUser.emailVerified || !profile) return;
   const userDocPath = `users/${firebaseUser.uid}`;
+  const userRef = doc(db, 'users', firebaseUser.uid);
+
   try {
-    await setDoc(
-      doc(db, 'users', firebaseUser.uid),
-      {
-        uid: firebaseUser.uid,
-        email: String(profile.email || firebaseUser.email || '').toLowerCase(),
-        fullName: String(profile.fullName || firebaseUser.displayName || 'Campus User').slice(0, 120),
-        role: profile.role === 'admin' ? 'admin' : profile.role === 'professor' ? 'professor' : 'student',
-        department: String(profile.department || 'College of Informatics and Computing Sciences (CICS)').slice(0, 150),
-        academicBlock: profile.academicBlock ? String(profile.academicBlock).slice(0, 20) : '',
-        emailVerified: true,
-        isActive: true,
-        createdAt: serverTimestamp(),
-      },
-      { merge: true }
-    );
+    const createFields = buildUserProfileCreateFields(firebaseUser, profile);
+    const updateFields = buildUserProfileUpdateFields(profile, firebaseUser);
+    if (!createFields || !updateFields) return;
+
+    await runTransaction(db, async (transaction) => {
+      const snapshot = await transaction.get(userRef);
+      if (snapshot.exists()) {
+        transaction.update(userRef, {
+          ...updateFields,
+          updatedAt: serverTimestamp(),
+        });
+      } else {
+        transaction.set(userRef, {
+          ...createFields,
+          createdAt: serverTimestamp(),
+          updatedAt: serverTimestamp(),
+        });
+      }
+    });
   } catch (error) {
-    // Do not block the primary session if rules restrict a role field update on existing user
+    // The API-backed session remains authoritative; Firestore sync is supplementary.
     console.warn(`[Firestore] Profile sync skipped for ${userDocPath}:`, error?.message || error);
   }
 }
