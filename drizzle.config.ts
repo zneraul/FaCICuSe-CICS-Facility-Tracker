@@ -1,5 +1,6 @@
 import { defineConfig } from 'drizzle-kit';
 import * as dotenv from 'dotenv';
+import { withVerifiedPostgresSslMode } from './backend/database/postgres/sslConfig.js';
 
 dotenv.config();
 
@@ -7,7 +8,7 @@ const sqlHost = process.env.SQL_HOST;
 const sqlDbName = process.env.SQL_DB_NAME;
 const user = process.env.SQL_ADMIN_USER;
 const password = process.env.SQL_ADMIN_PASSWORD;
-const databaseUrl = process.env.DATABASE_URL;
+const databaseUrl = process.env.MIGRATION_DATABASE_URL || process.env.DATABASE_URL;
 
 const useSsl =
   String(process.env.SQL_SSL || '').toLowerCase() === 'true' ||
@@ -16,7 +17,7 @@ const useSsl =
 
 let dbCredentials;
 if (databaseUrl) {
-  dbCredentials = { url: databaseUrl, ssl: useSsl };
+  dbCredentials = { url: withVerifiedPostgresSslMode(databaseUrl, useSsl) };
 } else {
   if (!sqlHost) throw new Error('SQL_HOST must be set in environment variables.');
   if (!sqlDbName) throw new Error('SQL_DB_NAME must be set in environment variables.');
