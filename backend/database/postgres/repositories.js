@@ -13,12 +13,6 @@ import {
 import { ACTIVE_BLOCKING_STATUSES } from '../../domain/entities.js';
 import { ConflictError } from '../../domain/errors.js';
 import { TimeSlot } from '../../domain/valueObjects.js';
-
-const transactionContext = new AsyncLocalStorage();
-
-function getDatabase() {
-  return transactionContext.getStore() || db;
-}
 import {
   assertNoClassScheduleConflicts,
   assertNoReservationClassScheduleConflict,
@@ -26,6 +20,12 @@ import {
   getManilaWeekday,
   sortClassSchedules,
 } from '../../domain/classSchedule.js';
+
+const transactionContext = new AsyncLocalStorage();
+
+function getDatabase() {
+  return transactionContext.getStore() || db;
+}
 
 function wrapDbError(action, error) {
   if (error instanceof ConflictError) {
@@ -64,7 +64,7 @@ export function createPostgresAdapters() {
 
     async findById(id) {
       try {
-        const rows = await db.select().from(facilities).where(eq(facilities.id, id));
+        const rows = await getDatabase().select().from(facilities).where(eq(facilities.id, id));
         return rows[0] || null;
       } catch (error) {
         wrapDbError('find facility by id', error);
@@ -73,7 +73,7 @@ export function createPostgresAdapters() {
 
     async findByCode(code) {
       try {
-        const rows = await db.select().from(facilities).where(eq(facilities.code, code));
+        const rows = await getDatabase().select().from(facilities).where(eq(facilities.code, code));
         return rows[0] || null;
       } catch (error) {
         wrapDbError('find facility by code', error);
@@ -82,7 +82,7 @@ export function createPostgresAdapters() {
 
     async create(data) {
       try {
-        const rows = await db.insert(facilities).values(data).returning();
+        const rows = await getDatabase().insert(facilities).values(data).returning();
         return rows[0];
       } catch (error) {
         wrapDbError('create facility', error);
@@ -118,8 +118,8 @@ export function createPostgresAdapters() {
   async function enrichReservations(rows) {
     if (!rows.length) return [];
     const [allFacilities, allUsers] = await Promise.all([
-      db.select().from(facilities),
-      db.select().from(users),
+      getDatabase().select().from(facilities),
+      getDatabase().select().from(users),
     ]);
     const facilityMap = new Map(allFacilities.map((f) => [f.id, f]));
     const userMap = new Map(allUsers.map((u) => [u.id, u]));
@@ -193,7 +193,7 @@ export function createPostgresAdapters() {
 
     async findById(id) {
       try {
-        const rows = await db.select().from(reservations).where(eq(reservations.id, id));
+        const rows = await getDatabase().select().from(reservations).where(eq(reservations.id, id));
         const enriched = await enrichReservations(rows);
         return enriched[0] || null;
       } catch (error) {
@@ -203,7 +203,7 @@ export function createPostgresAdapters() {
 
     async createWithConflictCheck(data) {
       try {
-        const created = await db.transaction(async (tx) => {
+        const created = await getDatabase().transaction(async (tx) => {
           const sameDay = await tx
             .select()
             .from(reservations)
@@ -294,7 +294,7 @@ export function createPostgresAdapters() {
       { facilityId, reservationDate, startTime, endTime, reviewerId, reviewNote }
     ) {
       try {
-        const updated = await db.transaction(async (tx) => {
+        const updated = await getDatabase().transaction(async (tx) => {
           const sameDay = await tx
             .select()
             .from(reservations)
@@ -375,8 +375,8 @@ export function createPostgresAdapters() {
   async function enrichIssues(rows) {
     if (!rows.length) return [];
     const [allFacilities, allUsers] = await Promise.all([
-      db.select().from(facilities),
-      db.select().from(users),
+      getDatabase().select().from(facilities),
+      getDatabase().select().from(users),
     ]);
     const facilityMap = new Map(allFacilities.map((f) => [f.id, f]));
     const userMap = new Map(allUsers.map((u) => [u.id, u]));
@@ -442,7 +442,7 @@ export function createPostgresAdapters() {
 
     async create(data) {
       try {
-        const rows = await db.insert(maintenanceIssues).values(data).returning();
+        const rows = await getDatabase().insert(maintenanceIssues).values(data).returning();
         const enriched = await enrichIssues(rows);
         return enriched[0];
       } catch (error) {
@@ -497,7 +497,7 @@ export function createPostgresAdapters() {
 
     async findByUid(uid) {
       try {
-        const rows = await db.select().from(users).where(eq(users.uid, uid));
+        const rows = await getDatabase().select().from(users).where(eq(users.uid, uid));
         return sanitizePublicUser(rows[0] || null);
       } catch (error) {
         wrapDbError('find user by uid', error);
@@ -507,7 +507,7 @@ export function createPostgresAdapters() {
     async findByEmail(email) {
       try {
         const normalized = String(email || '').trim().toLowerCase();
-        const rows = await db.select().from(users).where(eq(users.email, normalized));
+        const rows = await getDatabase().select().from(users).where(eq(users.email, normalized));
         return sanitizePublicUser(rows[0] || null);
       } catch (error) {
         wrapDbError('find user by email', error);
@@ -517,7 +517,7 @@ export function createPostgresAdapters() {
     async findAuthRecordByEmail(email) {
       try {
         const normalized = String(email || '').trim().toLowerCase();
-        const rows = await db.select().from(users).where(eq(users.email, normalized));
+        const rows = await getDatabase().select().from(users).where(eq(users.email, normalized));
         return rows[0] || null;
       } catch (error) {
         wrapDbError('find auth record by email', error);
@@ -526,7 +526,7 @@ export function createPostgresAdapters() {
 
     async findById(id) {
       try {
-        const rows = await db.select().from(users).where(eq(users.id, id));
+        const rows = await getDatabase().select().from(users).where(eq(users.id, id));
         return sanitizePublicUser(rows[0] || null);
       } catch (error) {
         wrapDbError('find user by id', error);
@@ -558,7 +558,7 @@ export function createPostgresAdapters() {
     }) {
       try {
         const normalizedEmail = String(email).trim().toLowerCase();
-        const existing = await db.select().from(users).where(eq(users.email, normalizedEmail));
+        const existing = await getDatabase().select().from(users).where(eq(users.email, normalizedEmail));
         if (existing.length > 0) {
           throw new ConflictError('An account with this university email already exists.');
         }
@@ -760,7 +760,7 @@ export function createPostgresAdapters() {
   const auditLogPort = {
     async record({ actorUserId, actorEmail, actorRole, action, entityType, entityId, details }) {
       try {
-        await db.insert(auditLogs).values({
+        await getDatabase().insert(auditLogs).values({
           actorUserId: actorUserId || null,
           actorEmail,
           actorRole,
@@ -790,8 +790,8 @@ export function createPostgresAdapters() {
   async function enrichClassSchedules(rows) {
     if (!rows.length) return [];
     const [allFacilities, allUsers] = await Promise.all([
-      db.select().from(facilities),
-      db.select().from(users),
+      getDatabase().select().from(facilities),
+      getDatabase().select().from(users),
     ]);
     const facilityMap = new Map(allFacilities.map((f) => [f.id, f]));
     const userMap = new Map(allUsers.map((u) => [u.id, u]));
@@ -820,7 +820,7 @@ export function createPostgresAdapters() {
   const classScheduleRepo = {
     async listAll() {
       try {
-        const rows = await db.select().from(classSchedules);
+        const rows = await getDatabase().select().from(classSchedules);
         const enriched = await enrichClassSchedules(rows);
         return sortClassSchedules(enriched);
       } catch (error) {
@@ -889,7 +889,7 @@ export function createPostgresAdapters() {
 
     async createWithConflictCheck(data) {
       try {
-        const created = await db.transaction(async (tx) => {
+        const created = await getDatabase().transaction(async (tx) => {
           const sameDayRows = await tx
             .select()
             .from(classSchedules)
@@ -934,7 +934,7 @@ export function createPostgresAdapters() {
     async updateWithConflictCheck(id, data) {
       try {
         const numericId = Number(id);
-        const updated = await db.transaction(async (tx) => {
+        const updated = await getDatabase().transaction(async (tx) => {
           const sameDayRows = await tx
             .select()
             .from(classSchedules)
