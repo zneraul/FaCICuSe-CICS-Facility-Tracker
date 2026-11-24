@@ -80,3 +80,6 @@ export const CLASS_SCHEDULE_REPO_METHODS = [
   'updateVerificationStatus',
   'remove',
 ];
+
+
+export const UNIT_OF_WORK_PORT_METHODS = ['run'];
