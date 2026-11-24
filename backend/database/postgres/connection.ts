@@ -1,6 +1,10 @@
 import { drizzle } from 'drizzle-orm/node-postgres';
 import { Pool } from 'pg';
 import * as schema from './schema.ts';
+import {
+  createPostgresSslOptions,
+  withVerifiedPostgresSslMode,
+} from './sslConfig.js';
 
 declare global {
   var _postgresPool: Pool | undefined;
@@ -17,10 +21,9 @@ export const createPool = () => {
 
     global._postgresPool = connectionString
       ? new Pool({
-          connectionString,
+          connectionString: withVerifiedPostgresSslMode(connectionString, useSsl),
           max: 10,
           connectionTimeoutMillis: 15000,
-          ssl: useSsl ? { rejectUnauthorized: false } : undefined,
         })
       : new Pool({
           host: process.env.SQL_HOST,
@@ -30,7 +33,7 @@ export const createPool = () => {
           database: process.env.SQL_DB_NAME,
           max: 10,
           connectionTimeoutMillis: 15000,
-          ssl: useSsl ? { rejectUnauthorized: false } : undefined,
+          ssl: createPostgresSslOptions(useSsl),
         });
 
     global._postgresPool.on('error', (err) => {
