@@ -750,7 +750,7 @@ export function createPostgresAdapters() {
           details,
         });
       } catch (error) {
-        console.error('[AuditLog Error] Failed to record audit entry:', error);
+        wrapDbError('record audit log', error);
       }
     },
 
