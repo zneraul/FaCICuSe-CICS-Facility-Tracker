@@ -52,7 +52,7 @@ export function createPostgresAdapters() {
   const facilityRepo = {
     async listAll() {
       try {
-        return await db
+        return await getDatabase()
           .select()
           .from(facilities)
           .where(and(eq(facilities.isArchived, false), eq(facilities.isDemo, false)))
@@ -91,7 +91,7 @@ export function createPostgresAdapters() {
 
     async update(id, data) {
       try {
-        const rows = await db
+        const rows = await getDatabase()
           .update(facilities)
           .set(data)
           .where(eq(facilities.id, id))
@@ -104,7 +104,7 @@ export function createPostgresAdapters() {
 
     async remove(id) {
       try {
-        await db
+        await getDatabase()
           .update(facilities)
           .set({ isArchived: true, isReservable: false, status: 'Restricted' })
           .where(eq(facilities.id, id));
@@ -147,7 +147,7 @@ export function createPostgresAdapters() {
   const reservationRepo = {
     async listAll() {
       try {
-        const rows = await db
+        const rows = await getDatabase()
           .select()
           .from(reservations)
           .where(eq(reservations.isDemo, false))
@@ -161,7 +161,7 @@ export function createPostgresAdapters() {
 
     async listByUserId(userId) {
       try {
-        const rows = await db
+        const rows = await getDatabase()
           .select()
           .from(reservations)
           .where(and(eq(reservations.userId, userId), eq(reservations.isDemo, false)))
@@ -175,7 +175,7 @@ export function createPostgresAdapters() {
 
     async listByFacilityAndDate(facilityId, reservationDate) {
       try {
-        return await db
+        return await getDatabase()
           .select()
           .from(reservations)
           .where(
@@ -272,7 +272,7 @@ export function createPostgresAdapters() {
 
     async updateStatus(id, { status, reviewerId, reviewNote }) {
       try {
-        const rows = await db
+        const rows = await getDatabase()
           .update(reservations)
           .set({
             status,
@@ -401,7 +401,7 @@ export function createPostgresAdapters() {
   const issueRepo = {
     async listAll() {
       try {
-        const rows = await db
+        const rows = await getDatabase()
           .select()
           .from(maintenanceIssues)
           .where(eq(maintenanceIssues.isDemo, false))
@@ -415,7 +415,7 @@ export function createPostgresAdapters() {
 
     async listByReporterId(reporterId) {
       try {
-        const rows = await db
+        const rows = await getDatabase()
           .select()
           .from(maintenanceIssues)
           .where(and(eq(maintenanceIssues.reporterId, reporterId), eq(maintenanceIssues.isDemo, false)))
@@ -429,7 +429,7 @@ export function createPostgresAdapters() {
 
     async findById(id) {
       try {
-        const rows = await db
+        const rows = await getDatabase()
           .select()
           .from(maintenanceIssues)
           .where(eq(maintenanceIssues.id, id));
@@ -452,7 +452,7 @@ export function createPostgresAdapters() {
 
     async updateStatus(id, { status, actionTaken, assignedTo }) {
       try {
-        const rows = await db
+        const rows = await getDatabase()
           .update(maintenanceIssues)
           .set({
             status,
@@ -484,7 +484,7 @@ export function createPostgresAdapters() {
   const userRepo = {
     async listAll() {
       try {
-        const rows = await db
+        const rows = await getDatabase()
           .select()
           .from(users)
           .where(eq(users.isDemo, false))
@@ -535,7 +535,7 @@ export function createPostgresAdapters() {
 
     async findByVerificationTokenHash(tokenHash) {
       try {
-        const rows = await db
+        const rows = await getDatabase()
           .select()
           .from(users)
           .where(eq(users.verificationTokenHash, tokenHash));
@@ -562,7 +562,7 @@ export function createPostgresAdapters() {
         if (existing.length > 0) {
           throw new ConflictError('An account with this university email already exists.');
         }
-        const rows = await db
+        const rows = await getDatabase()
           .insert(users)
           .values({
             uid,
@@ -590,7 +590,7 @@ export function createPostgresAdapters() {
 
     async setPasswordByUid(uid, passwordHash) {
       try {
-        const rows = await db
+        const rows = await getDatabase()
           .update(users)
           .set({ passwordHash, authProvider: 'google+password' })
           .where(eq(users.uid, uid))
@@ -603,7 +603,7 @@ export function createPostgresAdapters() {
 
     async markEmailVerified(id) {
       try {
-        const rows = await db
+        const rows = await getDatabase()
           .update(users)
           .set({
             emailVerified: true,
@@ -620,7 +620,7 @@ export function createPostgresAdapters() {
 
     async updateVerificationToken(id, { verificationTokenHash, verificationTokenExpiresAt }) {
       try {
-        const rows = await db
+        const rows = await getDatabase()
           .update(users)
           .set({
             verificationTokenHash,
@@ -639,7 +639,7 @@ export function createPostgresAdapters() {
     async upsertVerifiedUser({ uid, email, fullName, role, department }) {
       try {
         const normalizedEmail = String(email).trim().toLowerCase();
-        const rows = await db
+        const rows = await getDatabase()
           .insert(users)
           .values({
             uid,
@@ -673,7 +673,7 @@ export function createPostgresAdapters() {
         if (academicBlock !== undefined) {
           updateSet.academicBlock = academicBlock;
         }
-        const rows = await db
+        const rows = await getDatabase()
           .update(users)
           .set(updateSet)
           .where(eq(users.id, id))
@@ -690,7 +690,7 @@ export function createPostgresAdapters() {
         if (academicBlock !== undefined) {
           updateSet.academicBlock = academicBlock;
         }
-        const rows = await db
+        const rows = await getDatabase()
           .update(users)
           .set(updateSet)
           .where(eq(users.id, id))
@@ -705,7 +705,7 @@ export function createPostgresAdapters() {
   const notificationPort = {
     async listByUserId(userId) {
       try {
-        return await db
+        return await getDatabase()
           .select()
           .from(notifications)
           .where(eq(notifications.userId, userId))
@@ -717,7 +717,7 @@ export function createPostgresAdapters() {
 
     async create({ userId, title, message, type, linkPath }) {
       try {
-        const rows = await db
+        const rows = await getDatabase()
           .insert(notifications)
           .values({
             userId,
@@ -736,7 +736,7 @@ export function createPostgresAdapters() {
 
     async markAsRead(userId, id) {
       try {
-        await db
+        await getDatabase()
           .update(notifications)
           .set({ isRead: true })
           .where(and(eq(notifications.id, id), eq(notifications.userId, userId)));
@@ -747,7 +747,7 @@ export function createPostgresAdapters() {
 
     async markAllAsRead(userId) {
       try {
-        await db
+        await getDatabase()
           .update(notifications)
           .set({ isRead: true })
           .where(eq(notifications.userId, userId));
@@ -776,7 +776,7 @@ export function createPostgresAdapters() {
 
     async listRecent(limitCount = 30) {
       try {
-        return await db
+        return await getDatabase()
           .select()
           .from(auditLogs)
           .orderBy(desc(auditLogs.createdAt))
@@ -830,7 +830,7 @@ export function createPostgresAdapters() {
 
     async listByDayOfWeek(dayOfWeek) {
       try {
-        const rows = await db
+        const rows = await getDatabase()
           .select()
           .from(classSchedules)
           .where(eq(classSchedules.dayOfWeek, dayOfWeek))
@@ -844,7 +844,7 @@ export function createPostgresAdapters() {
 
     async listByFacilityAndDay(facilityId, dayOfWeek) {
       try {
-        const rows = await db
+        const rows = await getDatabase()
           .select()
           .from(classSchedules)
           .where(
@@ -863,7 +863,7 @@ export function createPostgresAdapters() {
 
     async findById(id) {
       try {
-        const rows = await db
+        const rows = await getDatabase()
           .select()
           .from(classSchedules)
           .where(eq(classSchedules.id, Number(id)));
@@ -876,7 +876,7 @@ export function createPostgresAdapters() {
 
     async findBySeedKey(seedKey) {
       try {
-        const rows = await db
+        const rows = await getDatabase()
           .select()
           .from(classSchedules)
           .where(eq(classSchedules.seedKey, String(seedKey)));
@@ -979,7 +979,7 @@ export function createPostgresAdapters() {
 
     async updateVerificationStatus(id, { verificationStatus, verifiedBy, verifiedAt }) {
       try {
-        const rows = await db
+        const rows = await getDatabase()
           .update(classSchedules)
           .set({
             verificationStatus,
@@ -998,7 +998,7 @@ export function createPostgresAdapters() {
 
     async remove(id) {
       try {
-        const rows = await db
+        const rows = await getDatabase()
           .delete(classSchedules)
           .where(eq(classSchedules.id, Number(id)))
           .returning();
