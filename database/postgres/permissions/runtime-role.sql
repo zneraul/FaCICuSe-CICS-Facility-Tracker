@@ -1,6 +1,6 @@
 -- Run manually against the production "neondb" database as neondb_owner.
 -- This script is intentionally NOT run by application startup or CI.
--- Set the role password separately with psql's interactive: \\password facicuse_runtime
+-- Set the role password separately with psql's interactive: \password facicuse_runtime
 
 BEGIN;
 
