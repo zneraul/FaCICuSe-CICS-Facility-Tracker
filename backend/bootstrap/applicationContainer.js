@@ -1,6 +1,7 @@
 import { EmailDomainPolicy } from '../domain/valueObjects.js';
 import {
   AUDIT_LOG_PORT_METHODS,
+  UNIT_OF_WORK_PORT_METHODS,
   CLASS_SCHEDULE_REPO_METHODS,
   FACILITY_REPO_METHODS,
   ISSUE_REPO_METHODS,
@@ -24,12 +25,33 @@ import { createAuthMiddleware } from '../middleware/authMiddleware.js';
 import { createHttpControllers } from '../controllers/apiControllers.js';
 import { createApiRouter } from '../routes/apiRoutes.js';
 
+function wrapUseCasesWithUnitOfWork(useCases, unitOfWorkPort, methodNames) {
+  if (!unitOfWorkPort) return useCases;
+
+  const wrapped = { ...useCases };
+  for (const methodName of methodNames) {
+    const method = useCases[methodName];
+    if (typeof method !== 'function') {
+      throw new Error(`Cannot apply UnitOfWorkPort: use case method "${methodName}" is missing.`);
+    }
+    wrapped[methodName] = (...args) =>
+      unitOfWorkPort.run(() => method(...args));
+  }
+  return wrapped;
+}
+
 export function buildApplicationContainer(config) {
   // 1. Database and service adapters (outbound ports)
   const adapters =
     config.storageMode === 'postgres'
       ? createPostgresAdapters()
       : createLocalJsonAdapters();
+
+  const unitOfWorkPort =
+    config.storageMode === 'postgres' ? adapters.unitOfWorkPort : null;
+  if (unitOfWorkPort) {
+    assertPortImplemented(unitOfWorkPort, UNIT_OF_WORK_PORT_METHODS, 'UnitOfWorkPort');
+  }
 
   const {
     facilityRepo,
@@ -56,44 +78,75 @@ export function buildApplicationContainer(config) {
   const domainPolicy = new EmailDomainPolicy(config.allowedUniversityDomains);
 
   // 2. Application Core Use Cases
-  const facilityUseCases = createFacilityUseCases({
-    facilityRepo,
-    reservationRepo,
-    classScheduleRepo,
-    issueRepo,
-    auditLogPort,
-  });
+  const facilityUseCases = wrapUseCasesWithUnitOfWork(
+    createFacilityUseCases({
+      facilityRepo,
+      reservationRepo,
+      classScheduleRepo,
+      issueRepo,
+      auditLogPort,
+    }),
+    unitOfWorkPort,
+    ['createFacility', 'updateFacility', 'deleteFacility']
+  );
 
-  const reservationUseCases = createReservationUseCases({
-    facilityRepo,
-    reservationRepo,
-    classScheduleRepo,
-    userRepo,
-    notificationPort,
-    auditLogPort,
-  });
+  const reservationUseCases = wrapUseCasesWithUnitOfWork(
+    createReservationUseCases({
+      facilityRepo,
+      reservationRepo,
+      classScheduleRepo,
+      userRepo,
+      notificationPort,
+      auditLogPort,
+    }),
+    unitOfWorkPort,
+    [
+      'createReservationRequest',
+      'createAdminScheduleBlock',
+      'rescheduleReservation',
+      'cancelUserReservation',
+      'reviewReservation',
+    ]
+  );
 
-  const classScheduleUseCases = createClassScheduleUseCases({
-    classScheduleRepo,
-    facilityRepo,
-    auditLogPort,
-  });
+  const classScheduleUseCases = wrapUseCasesWithUnitOfWork(
+    createClassScheduleUseCases({
+      classScheduleRepo,
+      facilityRepo,
+      auditLogPort,
+    }),
+    unitOfWorkPort,
+    [
+      'createClassSchedule',
+      'updateClassSchedule',
+      'verifyClassSchedule',
+      'deleteClassSchedule',
+    ]
+  );
 
-  const maintenanceUseCases = createMaintenanceUseCases({
-    facilityRepo,
-    issueRepo,
-    userRepo,
-    notificationPort,
-    auditLogPort,
-  });
+  const maintenanceUseCases = wrapUseCasesWithUnitOfWork(
+    createMaintenanceUseCases({
+      facilityRepo,
+      issueRepo,
+      userRepo,
+      notificationPort,
+      auditLogPort,
+    }),
+    unitOfWorkPort,
+    ['submitMaintenanceIssue', 'updateMaintenanceIssueForAdmin']
+  );
 
-  const userUseCases = createUserUseCases({
-    userRepo,
-    auditLogPort,
-    domainPolicy,
-    passwordHasher,
-    adminBootstrapEmails: config.adminBootstrapEmails,
-  });
+  const userUseCases = wrapUseCasesWithUnitOfWork(
+    createUserUseCases({
+      userRepo,
+      auditLogPort,
+      domainPolicy,
+      passwordHasher,
+      adminBootstrapEmails: config.adminBootstrapEmails,
+    }),
+    unitOfWorkPort,
+    ['updateUserForAdmin']
+  );
 
   const dashboardUseCases = createDashboardUseCases({
     facilityRepo,
