@@ -397,7 +397,7 @@ service cloud.firestore {
     // 7. Immutable Audit Logs (Strictly Admin-Readable)
     match /auditLogs/{auditLogId} {
       allow get: if isValidId(auditLogId) && isAdmin();
-      allow list: if isBootstrappedAdmin();
+      allow list: if isAdmin();
       allow create: if isVerifiedUser() &&
         isValidId(auditLogId) &&
         isValidAuditLog(incoming()) &&
