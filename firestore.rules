@@ -205,7 +205,7 @@ service cloud.firestore {
     // 1. User Profiles (Strict PII Isolation & Anti-Privilege-Escalation)
     match /users/{userId} {
       allow get: if isValidId(userId) && (isOwner(userId) || isAdmin());
-      allow list: if isSignedIn() && (resource.data.uid == request.auth.uid || isBootstrappedAdmin());
+      allow list: if isAdmin() || (isSignedIn() && resource.data.uid == request.auth.uid);
 
       allow create: if isVerifiedUser() &&
         isValidId(userId) &&
@@ -253,7 +253,7 @@ service cloud.firestore {
     // 2. Trusted Admin Grants
     match /admins/{userId} {
       allow get: if isValidId(userId) && (isOwner(userId) || isAdmin());
-      allow list: if isBootstrappedAdmin();
+      allow list: if isAdmin();
       allow create: if isAdmin() &&
         isValidId(userId) &&
         isValidAdminGrant(incoming()) &&
@@ -266,7 +266,7 @@ service cloud.firestore {
     // 3. Canonical CICS Facilities (Non-PII directory)
     match /facilities/{facilityId} {
       allow get: if isValidId(facilityId) && (existing().isArchived == false || isAdmin());
-      allow list: if resource.data.isArchived == false || isBootstrappedAdmin();
+      allow list: if resource.data.isArchived == false || isAdmin();
 
       allow create: if isAdmin() &&
         isValidId(facilityId) &&
@@ -293,7 +293,7 @@ service cloud.firestore {
       allow get: if isValidId(reservationId) && (
         (isSignedIn() && existing().userId == request.auth.uid) || isAdmin()
       );
-      allow list: if isSignedIn() && (resource.data.userId == request.auth.uid || isBootstrappedAdmin());
+      allow list: if isAdmin() || (isSignedIn() && resource.data.userId == request.auth.uid);
 
       allow create: if isVerifiedUser() &&
         isValidId(reservationId) &&
@@ -344,7 +344,7 @@ service cloud.firestore {
       allow get: if isValidId(issueId) && (
         (isSignedIn() && existing().reporterId == request.auth.uid) || isAdmin()
       );
-      allow list: if isSignedIn() && (resource.data.reporterId == request.auth.uid || isBootstrappedAdmin());
+      allow list: if isAdmin() || (isSignedIn() && resource.data.reporterId == request.auth.uid);
 
       allow create: if isVerifiedUser() &&
         isValidId(issueId) &&
@@ -397,7 +397,7 @@ service cloud.firestore {
     // 7. Immutable Audit Logs (Strictly Admin-Readable)
     match /auditLogs/{auditLogId} {
       allow get: if isValidId(auditLogId) && isAdmin();
-      allow list: if isBootstrappedAdmin();
+      allow list: if isAdmin();
       allow create: if isVerifiedUser() &&
         isValidId(auditLogId) &&
         isValidAuditLog(incoming()) &&

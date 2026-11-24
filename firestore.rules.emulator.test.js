@@ -346,3 +346,46 @@ test('default deny: unknown collections remain inaccessible', async () => {
     value: 'must not be stored',
   }));
 });
+
+test('trusted admins can list all protected collections, not only fetch individual documents', async () => {
+  await seedAdmin();
+  await seedDocument('users/student-1', profile('student-1'));
+  await seedDocument('facilities/facility-1', facility());
+  await seedDocument('facilities/archived-1', facility({ code: 'CICS-02', isArchived: true }));
+  await seedDocument('reservations/reservation-1', reservation('student-1'));
+  await seedDocument('maintenanceIssues/issue-1', maintenanceIssue('student-1'));
+  await seedDocument('auditLogs/audit-1', auditLog('student-1'));
+  await seedDocument('admins/admin-2', {
+    uid: 'admin-2',
+    email: 'admin-2@batstate-u.edu.ph',
+    createdAt: timestamp(),
+  });
+
+  const trustedAdminDb = verifiedUser('admin-1');
+
+  await assertSucceeds(getDocs(collection(trustedAdminDb, 'users')));
+  await assertSucceeds(getDocs(collection(trustedAdminDb, 'admins')));
+  await assertSucceeds(getDocs(collection(trustedAdminDb, 'facilities')));
+  await assertSucceeds(getDocs(collection(trustedAdminDb, 'reservations')));
+  await assertSucceeds(getDocs(collection(trustedAdminDb, 'maintenanceIssues')));
+  await assertSucceeds(getDocs(collection(trustedAdminDb, 'auditLogs')));
+});
+
+test('ordinary users cannot gain collection-wide list access', async () => {
+  await seedAdmin();
+  await seedDocument('users/student-1', profile('student-1'));
+  await seedDocument('users/professor-1', profile('professor-1', 'professor'));
+  await seedDocument('users/student-2', profile('student-2'));
+  await seedDocument('facilities/facility-1', facility());
+  await seedDocument('reservations/reservation-1', reservation('student-1'));
+  await seedDocument('maintenanceIssues/issue-1', maintenanceIssue('student-1'));
+  await seedDocument('auditLogs/audit-1', auditLog('student-1'));
+
+  for (const uid of ['student-1', 'professor-1']) {
+    const userDb = verifiedUser(uid);
+    await assertFails(getDocs(collection(userDb, 'users')));
+    await assertFails(getDocs(collection(userDb, 'reservations')));
+    await assertFails(getDocs(collection(userDb, 'maintenanceIssues')));
+    await assertFails(getDocs(collection(userDb, 'auditLogs')));
+  }
+});
