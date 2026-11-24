@@ -347,7 +347,6 @@ test('default deny: unknown collections remain inaccessible', async () => {
   }));
 });
 
-
 test('trusted admins can list all protected collections, not only fetch individual documents', async () => {
   await seedAdmin();
   await seedDocument('users/student-1', profile('student-1'));
@@ -375,15 +374,18 @@ test('trusted admins can list all protected collections, not only fetch individu
 test('ordinary users cannot gain collection-wide list access', async () => {
   await seedAdmin();
   await seedDocument('users/student-1', profile('student-1'));
+  await seedDocument('users/professor-1', profile('professor-1', 'professor'));
   await seedDocument('users/student-2', profile('student-2'));
   await seedDocument('facilities/facility-1', facility());
   await seedDocument('reservations/reservation-1', reservation('student-1'));
   await seedDocument('maintenanceIssues/issue-1', maintenanceIssue('student-1'));
   await seedDocument('auditLogs/audit-1', auditLog('student-1'));
 
-  const studentDb = verifiedUser('student-1');
-  await assertFails(getDocs(collection(studentDb, 'users')));
-  await assertFails(getDocs(collection(studentDb, 'reservations')));
-  await assertFails(getDocs(collection(studentDb, 'maintenanceIssues')));
-  await assertFails(getDocs(collection(studentDb, 'auditLogs')));
+  for (const uid of ['student-1', 'professor-1']) {
+    const userDb = verifiedUser(uid);
+    await assertFails(getDocs(collection(userDb, 'users')));
+    await assertFails(getDocs(collection(userDb, 'reservations')));
+    await assertFails(getDocs(collection(userDb, 'maintenanceIssues')));
+    await assertFails(getDocs(collection(userDb, 'auditLogs')));
+  }
 });
