@@ -40,12 +40,11 @@ test('PostgreSQL user adapter persists FaCICuSe password hashes and sanitizes pu
       created_at TIMESTAMP DEFAULT NOW()
     )
   `);
-  await pool.query('TRUNCATE TABLE audit_logs RESTART IDENTITY');
-  await pool.query('TRUNCATE TABLE users RESTART IDENTITY');
+  // Truncate both tables together because audit_logs has a foreign key to users.
+  await pool.query('TRUNCATE TABLE audit_logs, users RESTART IDENTITY');
 
   t.after(async () => {
-    await pool.query('TRUNCATE TABLE audit_logs RESTART IDENTITY');
-    await pool.query('TRUNCATE TABLE users RESTART IDENTITY');
+    await pool.query('TRUNCATE TABLE audit_logs, users RESTART IDENTITY');
     await pool.end();
   });
 
