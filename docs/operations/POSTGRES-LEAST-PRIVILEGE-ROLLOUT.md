@@ -15,7 +15,7 @@ The connected Neon project currently exposes the `neondb_owner` role as its appl
 
 1. Review `database/postgres/permissions/runtime-role.sql` and confirm the actual database/schema/table owners.
 2. Run that script manually in the production `neondb` database as `neondb_owner`. The script is not called by application startup or CI.
-3. Set a strong unique password interactively with psql: `\\password facicuse_runtime`.
+3. Set a strong unique password interactively with psql: `\password facicuse_runtime`.
 4. Construct a new Neon connection URI for `facicuse_runtime` with `sslmode=verify-full&channel_binding=require`. Keep the URI secret.
 5. Verify the new login from a trusted environment. Run read-only checks for current_user, SELECT access to each required table, and a rollback-only transaction that tests required INSERT/UPDATE/DELETE capabilities without committing data.
 6. Configure `MIGRATION_DATABASE_URL` only in the environment used for Drizzle migrations. Keep the elevated credential out of the web runtime.
