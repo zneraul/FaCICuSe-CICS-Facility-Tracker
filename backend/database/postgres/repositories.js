@@ -1,3 +1,4 @@
+import { AsyncLocalStorage } from 'node:async_hooks';
 import { and, asc, desc, eq, inArray } from 'drizzle-orm';
 import { db } from './connection.ts';
 import {
@@ -12,6 +13,12 @@ import {
 import { ACTIVE_BLOCKING_STATUSES } from '../../domain/entities.js';
 import { ConflictError } from '../../domain/errors.js';
 import { TimeSlot } from '../../domain/valueObjects.js';
+
+const transactionContext = new AsyncLocalStorage();
+
+function getDatabase() {
+  return transactionContext.getStore() || db;
+}
 import {
   assertNoClassScheduleConflicts,
   assertNoReservationClassScheduleConflict,
@@ -29,6 +36,19 @@ function wrapDbError(action, error) {
 }
 
 export function createPostgresAdapters() {
+  const unitOfWorkPort = {
+    run(callback) {
+      if (typeof callback !== 'function') {
+        throw new TypeError('UnitOfWorkPort.run() requires a callback.');
+      }
+      if (transactionContext.getStore()) {
+        return callback();
+      }
+      return db.transaction((transaction) =>
+        transactionContext.run(transaction, callback)
+      );
+    },
+  };
   const facilityRepo = {
     async listAll() {
       try {
@@ -997,5 +1017,6 @@ export function createPostgresAdapters() {
     notificationPort,
     auditLogPort,
     classScheduleRepo,
+    unitOfWorkPort,
   };
 }
