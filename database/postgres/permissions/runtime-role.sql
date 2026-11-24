@@ -15,10 +15,14 @@ $$;
 ALTER ROLE facicuse_runtime
   WITH LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT NOREPLICATION NOBYPASSRLS;
 
+-- Reset direct grants before applying the intended minimum privileges.
+REVOKE ALL PRIVILEGES ON DATABASE neondb FROM facicuse_runtime;
 GRANT CONNECT ON DATABASE neondb TO facicuse_runtime;
+
+REVOKE ALL PRIVILEGES ON SCHEMA public FROM facicuse_runtime;
 GRANT USAGE ON SCHEMA public TO facicuse_runtime;
 
--- Application CRUD permissions for operational tables.
+REVOKE ALL PRIVILEGES ON ALL TABLES IN SCHEMA public FROM facicuse_runtime;
 GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO facicuse_runtime;
 
 -- Audit records are append-only for the runtime application role.
@@ -26,11 +30,15 @@ REVOKE UPDATE, DELETE, TRUNCATE, REFERENCES, TRIGGER
   ON TABLE public.audit_logs FROM facicuse_runtime;
 GRANT SELECT, INSERT ON TABLE public.audit_logs TO facicuse_runtime;
 
+REVOKE ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public FROM facicuse_runtime;
 GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO facicuse_runtime;
 
--- Keep future tables/sequences created by the migration owner usable by the app role.
+-- Future sequences are usable, but future tables require explicit per-table grants
+-- in the migration that creates them. This keeps audit_logs append-only by default.
 ALTER DEFAULT PRIVILEGES FOR ROLE neondb_owner IN SCHEMA public
-  GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO facicuse_runtime;
+  REVOKE ALL PRIVILEGES ON TABLES FROM facicuse_runtime;
+ALTER DEFAULT PRIVILEGES FOR ROLE neondb_owner IN SCHEMA public
+  REVOKE ALL PRIVILEGES ON SEQUENCES FROM facicuse_runtime;
 ALTER DEFAULT PRIVILEGES FOR ROLE neondb_owner IN SCHEMA public
   GRANT USAGE, SELECT ON SEQUENCES TO facicuse_runtime;
 
