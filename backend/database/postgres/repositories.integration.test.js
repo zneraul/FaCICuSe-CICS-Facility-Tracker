@@ -48,13 +48,44 @@ test('PostgreSQL user adapter persists FaCICuSe password hashes and sanitizes pu
     await pool.end();
   });
 
-  const { userRepo, auditLogPort } = createPostgresAdapters();
+  const { userRepo, auditLogPort, unitOfWorkPort } = createPostgresAdapters();
   const inserted = await pool.query(
     `INSERT INTO users (uid, email, full_name, role, email_verified, is_active)
      VALUES ($1, $2, $3, $4, TRUE, TRUE) RETURNING id`,
     ['postgres-adapter-test-uid', 'adapter-test@g.batstate-u.edu.ph', 'Adapter Test User', 'student']
   );
+
   assert.ok(inserted.rows[0].id);
+
+  await assert.rejects(
+    unitOfWorkPort.run(async () => {
+      await userRepo.setPasswordByUid(
+        'postgres-adapter-test-uid',
+        'scrypt$transaction-rollback-password-hash'
+      );
+      await auditLogPort.record({
+        actorUserId: inserted.rows[0].id,
+        actorEmail: 'adapter-test@g.batstate-u.edu.ph',
+        actorRole: 'student',
+        action: 'UNIT_OF_WORK_ROLLBACK_TEST',
+        entityType: 'user',
+        entityId: String(inserted.rows[0].id),
+        details: 'This business write and audit row must roll back together.',
+      });
+      throw new Error('force unit-of-work rollback');
+    }),
+    /force unit-of-work rollback/
+  );
+
+  const rolledBackUser = await userRepo.findAuthRecordByEmail(
+    'adapter-test@g.batstate-u.edu.ph'
+  );
+  assert.equal(rolledBackUser.passwordHash, null);
+  const rolledBackAudit = await pool.query(
+    "SELECT id FROM audit_logs WHERE action = 'UNIT_OF_WORK_ROLLBACK_TEST'"
+  );
+  assert.equal(rolledBackAudit.rowCount, 0);
+
 
   const saved = await userRepo.setPasswordByUid(
     'postgres-adapter-test-uid',
