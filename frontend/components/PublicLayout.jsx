@@ -180,18 +180,18 @@ export function PublicLayout({ children }) {
             </Link>
           </nav>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', flexShrink: 0 }}>
+          <div className="public-header-actions">
             {user ? (
               <div style={{ position: 'relative' }}>
                 <button
                   type="button"
-                  className="btn btn-coral btn-sm"
+                  className="btn btn-coral btn-sm public-account-button"
                   aria-haspopup="menu"
                   aria-expanded={accountMenuOpen}
                   onClick={() => setAccountMenuOpen((open) => !open)}
                 >
-                  {user.fullName || 'My Account'}
-                  <span aria-hidden="true" style={{ marginLeft: '0.4rem' }}>▾</span>
+                  <span className="public-account-name">{user.fullName || 'My Account'}</span>
+                  <span className="public-account-chevron" aria-hidden="true">▾</span>
                 </button>
                 {accountMenuOpen && (
                   <div
