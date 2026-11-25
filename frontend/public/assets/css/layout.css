@@ -326,6 +326,22 @@
   flex: 0 0 auto;
 }
 
+/* Keep every workspace header control on the same visual baseline. */
+.app-topbar-actions > .popover-anchor {
+  display: inline-flex;
+  align-items: center;
+}
+
+.app-topbar-actions .icon-btn,
+.app-topbar-actions .topbar-profile-link,
+.app-topbar-primary-action > .btn {
+  min-height: 40px;
+}
+
+.app-topbar-actions .topbar-profile-link {
+  flex: 0 0 auto;
+}
+
 .app-content {
   width: 100%;
   max-width: 1240px;
@@ -475,13 +491,17 @@
     font-size: 1.12rem;
   }
   .app-topbar-actions {
-    flex-wrap: wrap;
-    width: 100%;
+    display: flex;
+    flex: 0 0 auto;
+    flex-wrap: nowrap;
+    width: auto;
+    max-width: 100%;
+    margin-left: auto;
     gap: 0.55rem;
     justify-content: flex-end;
   }
   .app-topbar-primary-action {
-    margin-right: auto;
+    margin-right: 0;
   }
 }
 /* Keep anchored homepage sections visible below the sticky public header. */
