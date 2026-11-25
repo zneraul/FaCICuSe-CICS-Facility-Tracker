@@ -20,19 +20,23 @@
         : 'Student';
 
     const wrap = document.createElement('div');
+    wrap.className = 'public-account-menu';
     wrap.style.position = 'relative';
     wrap.style.flexShrink = '0';
 
     const trigger = document.createElement('button');
     trigger.type = 'button';
-    trigger.className = 'btn btn-coral btn-sm';
+    trigger.className = 'btn btn-coral btn-sm public-account-trigger';
     trigger.textContent = name;
+    trigger.title = name;
+    trigger.setAttribute('aria-label', `Account menu for ${name}`);
     trigger.setAttribute('aria-haspopup', 'menu');
     trigger.setAttribute('aria-expanded', 'false');
 
     const menu = document.createElement('div');
     menu.hidden = true;
     menu.setAttribute('role', 'menu');
+    menu.classList.add('public-account-dropdown');
     menu.setAttribute('aria-label', 'Account navigation');
     Object.assign(menu.style, {
       position: 'absolute',
@@ -51,6 +55,7 @@
     identity.style.cssText = 'padding:0.55rem 0.65rem;border-bottom:1px solid var(--border-subtle);margin-bottom:0.3rem;';
     const nameLine = document.createElement('strong');
     nameLine.textContent = name;
+    nameLine.setAttribute('data-account-name', '');
     nameLine.style.cssText = 'display:block;font-size:0.88rem;color:var(--ink-primary);';
     const roleLine = document.createElement('span');
     roleLine.textContent = role;
