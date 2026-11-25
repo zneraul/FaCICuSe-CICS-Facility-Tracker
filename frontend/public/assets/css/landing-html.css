@@ -529,3 +529,36 @@
     justify-content: center;
   }
 }
+
+
+/* Keep the signed-in account control inside the public header on narrow screens. */
+@media (max-width: 600px) {
+  .public-header-inner {
+    gap: 0.75rem;
+  }
+
+  .header-actions-group {
+    min-width: 0;
+    gap: 0.45rem;
+  }
+
+  .public-account-menu {
+    min-width: 0;
+    max-width: min(42vw, 12rem);
+  }
+
+  .public-account-trigger {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .public-account-dropdown [data-account-name] {
+    overflow-wrap: anywhere;
+    word-break: normal;
+  }
+}
