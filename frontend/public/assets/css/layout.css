@@ -526,3 +526,96 @@
 #faq {
   scroll-margin-top: 5.5rem;
 }
+
+
+/* Keep the public brand, account control, and menu toggle inside narrow screens. */
+@media (max-width: 600px) {
+  .public-header-inner {
+    gap: 0.45rem;
+    padding: 0.65rem 0.75rem;
+  }
+
+  .public-header-inner > .brand-lockup {
+    flex: 0 1 auto;
+    min-width: 0;
+    gap: 0.4rem;
+  }
+
+  .public-header-inner .brand-logo-badge {
+    width: 32px;
+    height: 32px;
+    flex: 0 0 32px;
+  }
+
+  .public-header-inner .brand-wordmark,
+  html[data-theme="varsity"] .public-header-inner .brand-wordmark {
+    min-width: 0;
+    font-size: 0.94rem;
+    letter-spacing: -0.035em;
+  }
+
+  .public-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    flex: 0 0 auto;
+    min-width: 0;
+  }
+
+  .public-account-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.25rem;
+    width: 112px;
+    max-width: 112px;
+    min-width: 0;
+    padding-left: 0.55rem;
+    padding-right: 0.55rem;
+  }
+
+  .public-account-name {
+    display: block;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .public-account-chevron {
+    flex: 0 0 auto;
+    margin-left: 0.1rem;
+  }
+
+  .public-header-actions .public-mobile-toggle {
+    display: inline-flex;
+    flex: 0 0 40px;
+    width: 40px;
+    min-width: 40px;
+    height: 40px;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 360px) {
+  .public-header-inner {
+    padding-right: 0.55rem;
+    padding-left: 0.55rem;
+    gap: 0.3rem;
+  }
+
+  .public-header-inner .brand-wordmark,
+  html[data-theme="varsity"] .public-header-inner .brand-wordmark {
+    font-size: 0.86rem;
+  }
+
+  .public-header-actions {
+    gap: 0.3rem;
+  }
+
+  .public-account-button {
+    width: 96px;
+    max-width: 96px;
+  }
+}
