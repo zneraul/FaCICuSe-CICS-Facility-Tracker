@@ -492,16 +492,29 @@
   }
   .app-topbar-actions {
     display: flex;
-    flex: 0 0 auto;
-    flex-wrap: nowrap;
-    width: auto;
+    flex: 1 1 100%;
+    flex-wrap: wrap;
+    width: 100%;
     max-width: 100%;
-    margin-left: auto;
+    min-width: 0;
+    margin-left: 0;
     gap: 0.55rem;
     justify-content: flex-end;
   }
   .app-topbar-primary-action {
+    display: flex;
+    flex: 1 1 100%;
+    justify-content: flex-end;
+    min-width: 0;
     margin-right: 0;
+  }
+  .app-topbar-primary-action > .btn {
+    max-width: 100%;
+    white-space: normal;
+  }
+  .app-topbar-actions > .popover-anchor,
+  .app-topbar-actions > .topbar-profile-link {
+    flex: 0 0 auto;
   }
 }
 /* Keep anchored homepage sections visible below the sticky public header. */
