@@ -377,9 +377,35 @@
   .calendar-filters-grid {
     grid-template-columns: 1fr;
   }
+  .calendar-weekday-row,
+  .calendar-month-grid {
+    column-gap: 0.25rem;
+  }
+  .calendar-weekday-cell {
+    font-size: 0.64rem;
+    letter-spacing: 0.01em;
+    padding: 0.25rem 0;
+  }
   .calendar-day-cell {
     min-height: 72px;
-    padding: 0.35rem;
+    padding: 0.25rem;
+  }
+  .calendar-day-header {
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 0.12rem;
+  }
+  .calendar-day-num-btn {
+    font-size: 0.72rem;
+    padding: 0.08rem 0.12rem;
+  }
+  .calendar-day-add-btn {
+    width: 18px;
+    height: 18px;
+    flex: 0 0 18px;
+    border-radius: 50%;
+    font-size: 0.75rem;
   }
   .calendar-day-cell .calendar-event-pill,
   .calendar-day-cell .calendar-more-btn {
