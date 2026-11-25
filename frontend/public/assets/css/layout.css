@@ -326,6 +326,22 @@
   flex: 0 0 auto;
 }
 
+/* Keep every workspace header control on the same visual baseline. */
+.app-topbar-actions > .popover-anchor {
+  display: inline-flex;
+  align-items: center;
+}
+
+.app-topbar-actions .icon-btn,
+.app-topbar-actions .topbar-profile-link,
+.app-topbar-primary-action > .btn {
+  min-height: 40px;
+}
+
+.app-topbar-actions .topbar-profile-link {
+  flex: 0 0 auto;
+}
+
 .app-content {
   width: 100%;
   max-width: 1240px;
