@@ -528,6 +528,13 @@
 }
 
 
+.public-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  flex-shrink: 0;
+}
+
 /* Keep the public brand, account control, and menu toggle inside narrow screens. */
 @media (max-width: 600px) {
   .public-header-inner {
@@ -550,6 +557,9 @@
   .public-header-inner .brand-wordmark,
   html[data-theme="varsity"] .public-header-inner .brand-wordmark {
     min-width: 0;
+    flex-shrink: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
     font-size: 0.94rem;
     letter-spacing: -0.035em;
   }
@@ -607,6 +617,9 @@
 
   .public-header-inner .brand-wordmark,
   html[data-theme="varsity"] .public-header-inner .brand-wordmark {
+    flex-shrink: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
     font-size: 0.86rem;
   }
 
